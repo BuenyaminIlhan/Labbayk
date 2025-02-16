@@ -8,7 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
-import de.bueny.labbayk.ui.screens.QuranScreen
+import de.bueny.labbayk.ui.screens.QuranListScreen
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -16,6 +16,7 @@ fun App() {
 
     val quranViewModel: QuranViewModel = viewModel()
     val chapter = quranViewModel.chapter.collectAsState()
+    val quranList = quranViewModel.quranList.collectAsState()
 
     Scaffold(
         topBar = {
@@ -29,12 +30,16 @@ fun App() {
 //            )
         }
     ) { innerPadding ->
-        QuranScreen(
+//        QuranScreen(
+//            Modifier.padding(innerPadding),
+//            chapter = chapter,
+//            onVerseClick = { vers -> println("Geklickt: $vers") }
+//        )
+
+        QuranListScreen(
             Modifier.padding(innerPadding),
-            chapter = chapter,
-            onVerseClick = { vers -> println("Geklickt: $vers") }
+            quranList = quranList
         )
     }
-
 }
 

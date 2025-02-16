@@ -7,7 +7,10 @@ import de.bueny.labbayk.data.remote.QuranApi
 
 interface QuranRepositoryInterface {
     suspend fun getChapter(surahNumber: Int): ChapterResponse
+
     //suspend fun getChapterList(): ChapterListResponse
+    suspend fun getQuranList(): List<ChapterListResponse>
+
 }
 
 class QuranRepository(
@@ -15,8 +18,13 @@ class QuranRepository(
 ) : QuranRepositoryInterface {
 
     override suspend fun getChapter(surahNumber: Int): ChapterResponse {
-       return quranApi.service.getChapter(surahNumber)
+        return quranApi.service.getChapter(surahNumber)
     }
+
+override suspend fun getQuranList(): List<ChapterListResponse> {
+    return quranApi.service.getQuranList()
+
+}
 
 //    override suspend fun getChapterList(): ChapterListResponse {
 //        TODO("Not yet implemented")

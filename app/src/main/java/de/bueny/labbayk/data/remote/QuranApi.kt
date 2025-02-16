@@ -9,13 +9,16 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+
+//https://quranapi.pages.dev/api/surah.json
+
 interface quranApiInterface {
 
     @GET("api/{surahNumber}.json")
     suspend fun getChapter(@Path("surahNumber") surahNumber: Int): ChapterResponse
 
-//    @GET("surah.json")
-//    suspend fun  getChapterList(): ChapterListResponse
+    @GET("api/surah.json")
+    suspend fun  getQuranList(): List<ChapterListResponse>
 }
 
 object QuranApi {

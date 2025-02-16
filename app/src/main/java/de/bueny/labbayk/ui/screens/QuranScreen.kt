@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +32,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.bueny.labbayk.data.remote.ChapterResponse
+import de.bueny.labbayk.util.customTextStyle
+import de.bueny.labbayk.util.toArabicNumber
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -45,13 +45,13 @@ fun QuranScreen(
 ) {
     val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
 
-    val textStyle = TextStyle(
-        fontSize = 24.sp,
-        lineHeight = 30.sp,
-        fontWeight = FontWeight.Bold,
-        fontFamily = FontFamily.Serif,
-        textAlign = TextAlign.Right
-    )
+//    val textStyle = TextStyle(
+//        fontSize = 24.sp,
+//        lineHeight = 30.sp,
+//        fontWeight = FontWeight.Bold,
+//        fontFamily = FontFamily.Serif,
+//        textAlign = TextAlign.Right
+//    )
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -63,7 +63,7 @@ fun QuranScreen(
 
             Text(
                 text = bismillah,
-                style = textStyle.copy(
+                style = customTextStyle().copy(
                     fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -109,7 +109,7 @@ fun QuranScreen(
                             modifier = Modifier
                                 .padding(1.dp)
                                 .clickable { chapter.value?.let { onVerseClick(it.english[index]) } },
-                            style = textStyle
+                            style = customTextStyle()
                         )
                     }
 
@@ -126,7 +126,7 @@ fun QuranScreen(
                         Text(
                             text = arabicIndex,
                             color = Color.White,
-                            style = textStyle.copy(
+                            style = customTextStyle().copy(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Normal
                             ),
@@ -138,38 +138,3 @@ fun QuranScreen(
         }
     }
 }
-
-//@Composable
-//fun QuranScreen(
-//    modifier: Modifier = Modifier,
-//    chapter: State<ChapterResponse?>,
-//    onVerseClick: (String) -> Unit
-//) {
-//    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-//        LazyColumn(
-//            modifier = modifier
-//                .fillMaxWidth()
-//                .padding(16.dp)
-//        ) {
-//            chapter.value?.let {
-//                items(it.arabic1) { vers ->
-//                    Text(
-//                        text = vers,
-//                        modifier = Modifier
-//                            .padding(vertical = 4.dp)
-//                            .clickable { onVerseClick(vers) },
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
-
-
-fun toArabicNumber(number: Int): String {
-    val arabicDigits = arrayOf('٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩')
-    return number.toString().map { arabicDigits[it.digitToInt()] }.joinToString("")
-}
-
-
-
