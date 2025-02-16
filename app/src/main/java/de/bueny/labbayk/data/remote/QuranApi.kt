@@ -12,7 +12,7 @@ import retrofit2.http.Path
 
 //https://quranapi.pages.dev/api/surah.json
 
-interface quranApiInterface {
+interface QuranApiInterface {
 
     @GET("api/{surahNumber}.json")
     suspend fun getChapter(@Path("surahNumber") surahNumber: Int): ChapterResponse
@@ -33,6 +33,6 @@ object QuranApi {
         .client(client)
         .build()
 
-    val service: quranApiInterface by lazy { retrofit.create(quranApiInterface::class.java) }
+    val service: QuranApiInterface by lazy { retrofit.create(QuranApiInterface::class.java) }
 
 }
