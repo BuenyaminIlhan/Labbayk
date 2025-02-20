@@ -1,6 +1,8 @@
 package de.bueny.labbayk.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +12,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -30,7 +34,6 @@ fun QuranListScreen(
     LazyColumn(
         modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
             QuranListItem(
@@ -41,28 +44,23 @@ fun QuranListScreen(
     }
 }
 
-
 @Composable
 fun QuranListItem(chapter: QuranListEntity, index: Int) {
-    val backgroundColor = if (index % 2 == 0) Color(0xFF90A4CE) else Color(0xFFD2AC61)
+    val backgroundColor = if (index % 2 == 0) Color(0xFF90A4CE).copy(alpha = 0.6f)
+    else Color(0xFFD2AC61).copy(alpha = 0.6f)
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .shadow(8.dp, shape = RoundedCornerShape(8.dp)),
-        colors = CardDefaults.cardColors(backgroundColor),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
+    Column {
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(backgroundColor)
+                .padding(16.dp)
         ) {
             Row(
-                modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${index + 1}" + " " + chapter.surahName,
+                    text = "${index + 1} ${chapter.surahName}",
                     style = customTextStyle()
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -72,8 +70,13 @@ fun QuranListItem(chapter: QuranListEntity, index: Int) {
                 )
             }
         }
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = Color.Gray.copy(alpha = 0.5f)
+        )
     }
 }
+
 
 
 
