@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Labbayk</string>
+    <string name="home">Home</string>
+    <string name="quran_list">Quran</string>
+    <string name="favorites">Favoriten</string>
 </resources>
