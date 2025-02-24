@@ -31,10 +31,7 @@ fun QuranListScreen(
     modifier: Modifier,
     quranList: State<List<QuranListEntity>?>
 ) {
-    LazyColumn(
-        modifier
-            .fillMaxWidth()
-    ) {
+    LazyColumn {
         itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
             QuranListItem(
                 chapter,
@@ -76,9 +73,3 @@ fun QuranListItem(chapter: QuranListEntity, index: Int) {
         )
     }
 }
-
-
-
-
-
-

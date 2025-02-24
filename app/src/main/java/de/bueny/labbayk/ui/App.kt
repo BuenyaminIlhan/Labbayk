@@ -15,8 +15,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.rememberNavController
 import de.bueny.labbayk.ui.components.BottomNavigationBar
 import de.bueny.labbayk.ui.components.TopBar
+import de.bueny.labbayk.ui.navigation.AppNavHost
 import de.bueny.labbayk.ui.navigation.NavigationItem
-import de.bueny.labbayk.ui.screens.QuranListScreen
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -24,7 +24,6 @@ fun App() {
     val navHostController = rememberNavController()
     val quranViewModel: QuranViewModel = viewModel()
     val chapter = quranViewModel.chapter.collectAsState()
-    val quranList = quranViewModel.quranList.collectAsState()
     var selectedNavItem by rememberSaveable { mutableStateOf(NavigationItem.Home) }
 
 
@@ -55,9 +54,16 @@ fun App() {
 //            onVerseClick = { vers -> println("Geklickt: $vers") }
 //        )
 
-        QuranListScreen(
-            Modifier.padding(innerPadding),
-            quranList = quranList
+//        QuranListScreen(
+//            Modifier.padding(innerPadding),
+//            quranList = quranList
+//        )
+
+        AppNavHost(
+            modifier = Modifier.padding(innerPadding),
+            navHostController = navHostController,
+            selectedNavItem = selectedNavItem,
+            quranViewModel = quranViewModel
         )
     }
 }
