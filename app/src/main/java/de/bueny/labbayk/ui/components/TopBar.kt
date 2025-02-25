@@ -1,18 +1,23 @@
 package de.bueny.labbayk.ui.components
 
 import android.annotation.SuppressLint
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia.DefaultTab.AlbumsTab.value
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -40,42 +45,54 @@ fun TopBar(
 ) {
     var localTitle by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
         TopAppBar(
             title = { TopAppBarTitle(chapter) },
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            }
+//            navigationIcon = {
+//                if (canNavigateBack) {
+//                    IconButton(onClick = navigateUp) {
+//                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+//                    }
+//                }
+//            }
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextField(
-                value = localTitle,
-                onValueChange = { newTitle ->
-                    localTitle = newTitle
-                    onTitleChange(newTitle)
-                },
-                label = { Text("Kapitelnummer") },
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                value = localTitle,
+                onValueChange = { newText ->
+                    localTitle = newText
+                    onTitleChange(newText)
+                },
+                singleLine = true,
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Search"
+                    )
+                },
+                trailingIcon = {
+                    if (localTitle.isNotEmpty()) {
+                        IconButton(onClick = { localTitle = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = Icons.Default.Clear.name)
+                        }
+                    }
+                },
+                label = { Text("Kapitelnummer") }
             )
-
-            Button(
-                onClick = { viewModel.getChapter(localTitle.toInt()) },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Text("Suche")
-            }
         }
     }
 }
+
 
 @Composable
 fun TopAppBarTitle(chapter: State<ChapterResponse?>) {

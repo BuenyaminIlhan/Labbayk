@@ -48,17 +48,6 @@ fun App() {
             )
         }
     ) { innerPadding ->
-//        QuranScreen(
-//            Modifier.padding(innerPadding),
-//            chapter = chapter,
-//            onVerseClick = { vers -> println("Geklickt: $vers") }
-//        )
-
-//        QuranListScreen(
-//            Modifier.padding(innerPadding),
-//            quranList = quranList
-//        )
-
         AppNavHost(
             modifier = Modifier.padding(innerPadding),
             navHostController = navHostController,
