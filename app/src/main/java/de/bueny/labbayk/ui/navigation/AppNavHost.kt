@@ -21,7 +21,6 @@ fun AppNavHost(
 
     val quranList = quranViewModel.quranList.collectAsState()
 
-
     NavHost(
         navController = navHostController,
         startDestination = selectedNavItem.route,
