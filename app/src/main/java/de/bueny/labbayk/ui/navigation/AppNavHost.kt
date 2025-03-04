@@ -13,7 +13,7 @@ import de.bueny.labbayk.ui.screens.QuranListScreen
 
 @Composable
 fun AppNavHost(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     navHostController: NavHostController,
     selectedNavItem: NavigationItem,
     quranViewModel: QuranViewModel
@@ -24,7 +24,6 @@ fun AppNavHost(
     NavHost(
         navController = navHostController,
         startDestination = selectedNavItem.route,
-        modifier = modifier
     ) {
 
         composable<HomeRoute> {
@@ -32,13 +31,15 @@ fun AppNavHost(
         }
 
         composable<FavoritesRoute> {
-            FavoritesScreen()
+            FavoritesScreen(
+                modifier = modifier
+            )
         }
 
         composable<QuranListRoute> {
             QuranListScreen(
-                modifier = modifier,
-                quranList = quranList
+                quranList = quranList,
+                modifier = modifier
             )
         }
     }

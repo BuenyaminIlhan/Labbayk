@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -31,10 +32,12 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         val quranDB = QuranDatabase.getDB(application)
         val quranListDao = quranDB.quranListDao
 
-        quranRepository = QuranRepository(QuranApi, quranListDao)
+        quranRepository = QuranRepository(
+            QuranApi, quranListDao,
+        )
         fetchAndStoreQuranListIfNeeded()
         //getChapter()
-        getQuranList()
+
     }
 
     fun getChapter(surahNumber: Int = 56) {
@@ -65,17 +68,25 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun fetchAndStoreQuranListIfNeeded() {
+    private fun fetchAndStoreQuranListIfNeeded() = runBlocking {
+
         viewModelScope.launch {
+
             val localData = quranRepository.getQuranListFromLocal()
             if (localData.isEmpty()) {  // Nur wenn keine Daten vorhanden sind
                 try {
                     val quranList = quranRepository.getQuranList()
-                    quranRepository.insertQuranListToLocal(quranList)
+                    runBlocking {
+                        val result = launch { quranRepository.insertQuranListToLocal(quranList) }
+                        result.join()
+                        getQuranList()
+                    }
                 } catch (e: Exception) {
                     Log.e("QuranViewModel", "Fehler: ${e.message}")
                 }
             }
+            getQuranList()
+
         }
     }
 

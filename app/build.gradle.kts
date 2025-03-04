@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.databinding.adapters)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,7 +76,7 @@ dependencies {
     implementation(libs.squareup.moshi)
     implementation(libs.retrofit)
     implementation(libs.moshi)
-    implementation (libs.converter.moshi)
+    implementation(libs.converter.moshi)
     implementation(libs.logging.interceptor)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
@@ -87,4 +88,7 @@ dependencies {
 
     //Icon extended
     implementation(libs.androidx.compose.material.icons.extended)
+
+    //GSON Converter
+    implementation(libs.gson)
 }

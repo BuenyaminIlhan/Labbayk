@@ -13,11 +13,11 @@ enum class NavigationItem(
     val icon: ImageVector,
     val route: Any,
 ) {
-    Home(
-        label = R.string.home,
-        icon = Icons.Filled.Home,
-        route = HomeRoute,
-    ),
+//    Home(
+//        label = R.string.home,
+//        icon = Icons.Filled.Home,
+//        route = HomeRoute,
+//    ),
 
     QuranList(
         label = R.string.quran_list,

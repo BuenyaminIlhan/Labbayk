@@ -1,6 +1,8 @@
 package de.bueny.labbayk.data.repository
 
 import androidx.room.Dao
+import de.bueny.labbayk.data.local.ChapterDao
+import de.bueny.labbayk.data.local.ChapterEntity
 import de.bueny.labbayk.data.local.QuranListDao
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.data.remote.ChapterListResponse
@@ -13,11 +15,13 @@ interface QuranRepositoryInterface {
     suspend fun getQuranList(): List<ChapterListResponse>
     suspend fun getQuranListFromLocal(): List<QuranListEntity>
     suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>)
+    suspend fun insertChapterToLocal(chapter: ChapterResponse)
 }
 
 class QuranRepository(
     private val quranApi: QuranApi,
-    private val quranListDao: QuranListDao
+    private val quranListDao: QuranListDao,
+    //private val chapterDao: ChapterDao
 ) : QuranRepositoryInterface {
 
     override suspend fun getChapter(surahNumber: Int): ChapterResponse {
@@ -30,7 +34,7 @@ class QuranRepository(
     }
 
     override suspend fun getQuranListFromLocal(): List<QuranListEntity> {
-      return quranListDao.getAllQuranList()
+        return quranListDao.getAllQuranList()
     }
 
     override suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>) {
@@ -45,5 +49,25 @@ class QuranRepository(
             )
         }
         quranListDao.insertQuranList(quranEntities)
+    }
+
+    override suspend fun insertChapterToLocal(chapter: ChapterResponse) {
+//        val chapterEntity = ChapterEntity(
+//            surahName = chapter.surahName,
+//            surahNameArabic = chapter.surahNameArabic,
+//            surahNameArabicLong = chapter.surahNameArabicLong,
+//            surahNameTranslation = chapter.surahNameTranslation,
+//            revelationPlace = chapter.revelationPlace,
+//            totalAyah = chapter.totalAyah,
+//            surahNo = chapter.surahNo,
+//            audioInfo = chapter.audio,
+//            english = chapter.english,
+//            arabic1 = chapter.arabic1,
+//            arabic2 = chapter.arabic2,
+//            bengali = chapter.bengali,
+//        )
+
+        //chapterDao.insertChapter(chapterEntity)
+
     }
 }
