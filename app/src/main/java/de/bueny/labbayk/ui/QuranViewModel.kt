@@ -6,12 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.bueny.labbayk.data.local.QuranDatabase
 import de.bueny.labbayk.data.local.QuranListEntity
-import de.bueny.labbayk.data.remote.ChapterListResponse
 import de.bueny.labbayk.data.remote.ChapterResponse
 import de.bueny.labbayk.data.remote.QuranApi
 import de.bueny.labbayk.data.repository.QuranRepository
 import de.bueny.labbayk.data.repository.QuranRepositoryInterface
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -31,11 +29,12 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
         val quranDB = QuranDatabase.getDB(application)
         val quranListDao = quranDB.quranListDao
+        val chapterDao = quranDB.chapterDao
 
         quranRepository = QuranRepository(
-            QuranApi, quranListDao,
+            QuranApi, quranListDao, chapterDao
         )
-        fetchAndStoreQuranListIfNeeded()
+        loadQuranListToRoom()
         //getChapter()
 
     }
@@ -64,16 +63,15 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) {
                 Log.d("QuranViewModel", "Error: ${e.message}")
             }
-
         }
     }
 
-    private fun fetchAndStoreQuranListIfNeeded() = runBlocking {
+    private fun loadQuranListToRoom() = runBlocking {
 
         viewModelScope.launch {
 
             val localData = quranRepository.getQuranListFromLocal()
-            if (localData.isEmpty()) {  // Nur wenn keine Daten vorhanden sind
+            if (localData.isEmpty()) {
                 try {
                     val quranList = quranRepository.getQuranList()
                     runBlocking {
@@ -86,21 +84,22 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             getQuranList()
-
         }
     }
 
+    private fun loadChapterToRoom(surahNumber: Int) = runBlocking {
+        viewModelScope.launch {
+            try {
+                val chapterResponse = quranRepository.getChapter(surahNumber)
+                val chapter: ChapterResponse = chapterResponse
+                _chapter.value = chapter
+                Log.d("QuranViewModel", "Chapter: $chapter")
+                quranRepository.insertChapterToLocal(chapter)
+            } catch (e: Exception) {
+                Log.d("QuranViewModel", "Error: ${e.message}")
+            }
+        }
 
-//    fun getQuranList() {
-//        viewModelScope.launch {
-//            try {
-//                val quranList = quranRepository.getQuranList()
-//                val list: List<ChapterListResponse> = quranList
-//                _quranList.value = list
-//                Log.d("QuranViewModel", "Quran List: $quranList")
-//            } catch (e: Exception) {
-//                Log.d("QuranViewModel", "Error: ${e.message}")
-//            }
-//        }
-//    }
+    }
+
 }

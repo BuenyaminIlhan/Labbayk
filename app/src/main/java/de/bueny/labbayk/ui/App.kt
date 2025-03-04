@@ -37,8 +37,7 @@ fun App() {
     Scaffold(
         containerColor = primaryBackgroundColor,
         topBar = {
-            SearchField { }
-            if (selectedNavItem == NavigationItem.QuranList) {
+            if (selectedNavItem != NavigationItem.QuranList) {
                 TopBar(
                     backgroundColor = primaryBackgroundColor,
                     navigateUp = { },
@@ -48,7 +47,7 @@ fun App() {
                     chapter = chapter
                 )
             }
-        },
+       },
         bottomBar = {
             BottomNavigationBar(
                 navHostController,

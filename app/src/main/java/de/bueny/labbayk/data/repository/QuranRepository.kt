@@ -21,7 +21,7 @@ interface QuranRepositoryInterface {
 class QuranRepository(
     private val quranApi: QuranApi,
     private val quranListDao: QuranListDao,
-    //private val chapterDao: ChapterDao
+    private val chapterDao: ChapterDao
 ) : QuranRepositoryInterface {
 
     override suspend fun getChapter(surahNumber: Int): ChapterResponse {
@@ -52,22 +52,17 @@ class QuranRepository(
     }
 
     override suspend fun insertChapterToLocal(chapter: ChapterResponse) {
-//        val chapterEntity = ChapterEntity(
-//            surahName = chapter.surahName,
-//            surahNameArabic = chapter.surahNameArabic,
-//            surahNameArabicLong = chapter.surahNameArabicLong,
-//            surahNameTranslation = chapter.surahNameTranslation,
-//            revelationPlace = chapter.revelationPlace,
-//            totalAyah = chapter.totalAyah,
-//            surahNo = chapter.surahNo,
-//            audioInfo = chapter.audio,
-//            english = chapter.english,
-//            arabic1 = chapter.arabic1,
-//            arabic2 = chapter.arabic2,
-//            bengali = chapter.bengali,
-//        )
+        val chapterEntity = ChapterEntity(
+            surahName = chapter.surahName,
+            surahNameArabic = chapter.surahNameArabic,
+            surahNameArabicLong = chapter.surahNameArabicLong,
+            surahNameTranslation = chapter.surahNameTranslation,
+            revelationPlace = chapter.revelationPlace,
+            totalAyah = chapter.totalAyah,
+            surahNo = chapter.surahNo
+        )
 
-        //chapterDao.insertChapter(chapterEntity)
+        chapterDao.insertChapter(chapterEntity)
 
     }
 }

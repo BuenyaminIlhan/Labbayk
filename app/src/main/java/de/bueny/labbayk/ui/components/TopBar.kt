@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -32,20 +34,20 @@ fun TopBar(
 ) {
 
     Column(modifier = Modifier.background(backgroundColor)) {
-//        TopAppBar(
-//            title = { Text("Quran") },
-//            colors = TopAppBarDefaults.topAppBarColors(
-//                containerColor = backgroundColor
-//            )
-//        )
-        Row(
-            modifier = Modifier
-                .background(backgroundColor)
-                .padding(bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-        }
+        TopAppBar(
+            title = { Text("Quran") },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = backgroundColor
+            )
+        )
+//        Row(
+//            modifier = Modifier
+//                .background(backgroundColor)
+//                .padding(bottom = 8.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//
+//        }
     }
 }
 

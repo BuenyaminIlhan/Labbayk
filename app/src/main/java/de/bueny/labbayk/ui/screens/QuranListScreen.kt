@@ -43,7 +43,8 @@ fun QuranListScreen(
     quranList: State<List<QuranListEntity>?>,
     modifier: Modifier
 ) {
-    Column(modifier = modifier){
+    Column{
+        SearchField { }
 
         LazyColumn {
             itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
