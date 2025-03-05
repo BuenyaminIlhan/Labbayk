@@ -8,14 +8,14 @@ data class ChapterResponse(
     val revelationPlace: String,
     val totalAyah: Int,
     val surahNo: Int,
-    val audio: Map<String, AudioInfo>,
+    val audio: Map<String, ChapterAudioResponse>,
     val english: List<String>,
     val arabic1: List<String>,
     val arabic2: List<String>,
     val bengali: List<String>
 )
 
-data class AudioInfo(
+data class ChapterAudioResponse(
     val reciter: String,
     val url: String,
     val originalUrl: String

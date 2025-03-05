@@ -9,7 +9,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "chapter")
 data class ChapterEntity(
     @PrimaryKey(autoGenerate = true)
-
     val id: Int = 0,
     val surahName: String,
     val surahNameArabic: String,
@@ -18,26 +17,38 @@ data class ChapterEntity(
     val revelationPlace: String,
     val totalAyah: Int,
     val surahNo: Int,
-//    val english: List<String>,
-//    val arabic1: List<String>,
-//    val arabic2: List<String>,
-//    val bengali: List<String>
-    val chapterId: Int
 )
 
 @Entity(
     tableName = "chapter_audios",
     foreignKeys = [ForeignKey(
         entity = ChapterEntity::class,
-        parentColumns = ["chapterId"],
-        childColumns = ["id"]
+        parentColumns = ["id"],
+        childColumns = ["chapterId"],
+        onDelete = ForeignKey.CASCADE
     )]
 )
 data class ChapterAudio(
     @PrimaryKey(autoGenerate = true)
-    val pos: String = "1",
     val id: Int = 0,
     val reciter: String,
     val url: String,
-    val originalUrl: String
+    val originalUrl: String,
+    val chapterId: Int
+)
+
+@Entity(
+    tableName = "chapter_arabic1",
+    foreignKeys = [ForeignKey(
+        entity = ChapterEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["chapterId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class ChapterArabic1(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val arabic1: List<String>,
+    val chapterId: Int
 )

@@ -19,6 +19,10 @@ interface QuranApiInterface {
 
     @GET("api/surah.json")
     suspend fun  getQuranList(): List<ChapterListResponse>
+
+//    @GET("chapter/{surahNumber}/audios")
+//    suspend fun getChapterAudios(@Path("surahNumber") surahNumber: Int): List<ChapterAudioResponse>
+
 }
 
 object QuranApi {
