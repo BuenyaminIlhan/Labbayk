@@ -1,6 +1,7 @@
 package de.bueny.labbayk.data.repository
 
 import androidx.room.Dao
+import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.ChapterAudio
 import de.bueny.labbayk.data.local.ChapterDao
 import de.bueny.labbayk.data.local.ChapterEntity
@@ -16,12 +17,16 @@ interface QuranRepositoryInterface {
     suspend fun getChapter(surahNumber: Int): ChapterResponse
     suspend fun getQuranList(): List<ChapterListResponse>
     suspend fun getQuranListFromLocal(): List<QuranListEntity>
-    //suspend fun getChapterAudios(surahNumber: Int): List<ChapterAudioResponse>
     suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>)
     suspend fun insertChapterToLocal(chapter: ChapterResponse)
-    suspend fun insertChapterAudiosToLocal(chapterId: Int, audios: Map<String, ChapterAudioResponse>)
-    suspend fun getChapterCount(): Int
+    suspend fun insertChapterAudiosToLocal(
+        chapterId: Int,
+        audios: Map<String, ChapterAudioResponse>
+    )
 
+    suspend fun getChapterCount(): Int
+    suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String)
+    suspend fun getChapterArabic1(chapterId: Int): List<String>
 }
 
 class QuranRepository(
@@ -42,10 +47,6 @@ class QuranRepository(
     override suspend fun getQuranListFromLocal(): List<QuranListEntity> {
         return quranListDao.getAllQuranList()
     }
-
-//    override suspend fun getChapterAudios(surahNumber: Int): List<ChapterAudioResponse> {
-//        return quranApi.service.getChapterAudios(surahNumber)
-//    }
 
     override suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>) {
         val quranEntities = quranList.map { chapter ->
@@ -76,12 +77,13 @@ class QuranRepository(
     }
 
 
-
-  override suspend fun insertChapterAudiosToLocal(chapterId: Int, audios: Map<String, ChapterAudioResponse>) {
-        // Map wird in eine Liste umgewandelt, um sie in die Datenbank zu speichern
+    override suspend fun insertChapterAudiosToLocal(
+        chapterId: Int,
+        audios: Map<String, ChapterAudioResponse>
+    ) {
         val audioEntities = audios.map { entry ->
             ChapterAudio(
-                chapterId = chapterId,  // Verknüpfung mit Kapitel
+                chapterId = chapterId,
                 reciter = entry.value.reciter,
                 url = entry.value.url,
                 originalUrl = entry.value.originalUrl
@@ -94,4 +96,19 @@ class QuranRepository(
     override suspend fun getChapterCount(): Int {
         return chapterDao.getChapterCount()
     }
+
+    override suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String) {
+        val arabic1Entity = ChapterArabic1(
+            chapterId = chapterId,
+            arabic1 = arabic1
+        )
+        chapterDao.insertChapterArabic1(arabic1Entity)
+    }
+
+    override suspend fun getChapterArabic1(chapterId: Int): List<String> {
+        return chapterDao.getChapterArabic1(chapterId)
+    }
+
+
+
 }

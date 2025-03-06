@@ -7,7 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [QuranListEntity::class, ChapterEntity::class, ChapterAudio::class], version = 1, exportSchema = false)
+@Database(entities = [QuranListEntity::class, ChapterEntity::class, ChapterAudio::class, ChapterArabic1::class], version = 1, exportSchema = false)
 abstract class QuranDatabase : RoomDatabase() {
     abstract val quranListDao: QuranListDao
     abstract val chapterDao: ChapterDao

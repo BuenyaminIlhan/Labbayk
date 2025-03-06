@@ -35,22 +35,24 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import de.bueny.labbayk.data.local.QuranListEntity
+import de.bueny.labbayk.ui.QuranViewModel
 import de.bueny.labbayk.util.customTextStyle
 import de.bueny.labbayk.util.toArabicNumber
 
 @Composable
 fun QuranListScreen(
     quranList: State<List<QuranListEntity>?>,
-    modifier: Modifier
-) {
+    modifier: Modifier,
+    quranViewModel: QuranViewModel,
+
+    ) {
     Column{
         SearchField { }
 
         LazyColumn {
             itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
                 QuranListItem(
-                    chapter,
-                    index = index
+                    chapter,index, quranViewModel
                 )
             }
         }
@@ -59,14 +61,23 @@ fun QuranListScreen(
 
 @OptIn(UnstableApi::class)
 @Composable
-fun QuranListItem(chapter: QuranListEntity, index: Int) {
+fun QuranListItem(
+    chapter: QuranListEntity,
+    index: Int,
+    quranViewModel: QuranViewModel
+) {
     val backgroundColor = if (index % 2 == 0) Color(0xFF90A4CE).copy(alpha = 0.6f)
     else Color(0xFFD2AC61).copy(alpha = 0.6f)
+
+    val surahNo = index + 1
 
     Column {
         Box(
             modifier = Modifier
-                .clickable { Log.d("klick, index: ", "$index") }
+                .clickable {
+                    quranViewModel.getChapterArabic1(surahNo)
+
+                }
                 .fillMaxWidth()
                 .background(backgroundColor)
                 .padding(10.dp)
@@ -75,7 +86,7 @@ fun QuranListItem(chapter: QuranListEntity, index: Int) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${index + 1} ${chapter.surahName}",
+                    text = "$surahNo ${chapter.surahName}",
                     style = customTextStyle()
                 )
                 Spacer(modifier = Modifier.weight(1f))

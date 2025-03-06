@@ -41,20 +41,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun getChapter(surahNumber: Int = 56) {
-        viewModelScope.launch {
-
-            try {
-                val chapterResponse = quranRepository.getChapter(surahNumber)
-                val chapter: ChapterResponse = chapterResponse
-                _chapter.value = chapter
-                Log.d("QuranViewModel", "Chapter: $chapter")
-            } catch (e: Exception) {
-                Log.d("QuranViewModel", "Error: ${e.message}")
-            }
-        }
-    }
-
     private fun getQuranList() {
         viewModelScope.launch {
             try {
@@ -93,10 +79,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val chapterCount = quranRepository.getChapterCount()
                 if (chapterCount > 0) {
-                    Log.d(
-                        "QuranViewModel",
-                        "Datenbank ist bereits gefüllt. Kein erneutes Speichern nötig."
-                    )
                     return@launch
                 }
 
@@ -105,26 +87,36 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
                     val chapterResponse = quranRepository.getChapter(surahNumber)
                     val chapter: ChapterResponse = chapterResponse
-
-                    quranRepository.insertChapterToLocal(chapter)
-
                     val chapterId = chapter.surahNo
-
                     val audioResponse = chapterResponse.audio
-                    val arabic1Response = chapterResponse.arabic1
-                    Log.d("QuranViewModel", "Audio Response: ${arabic1Response}")
                     val audios: Map<String, ChapterAudioResponse> = audioResponse
 
+                    quranRepository.insertChapterToLocal(chapter)
                     quranRepository.insertChapterAudiosToLocal(chapterId, audios)
 
-                    Log.d("QuranViewModel", "Kapitel $surahNumber mit Audios gespeichert.")
+                    insertVerseToLocal(chapter)
                 }
-
-                Log.d("QuranViewModel", "Alle Kapitel erfolgreich gespeichert!")
             } catch (e: Exception) {
                 Log.e("QuranViewModel", "Fehler beim Laden der Kapitel: ${e.message}")
             }
         }
     }
+
+    private suspend fun insertVerseToLocal(chapter: ChapterResponse) {
+        for (verse in chapter.arabic1) {
+            quranRepository.insertChapterArabic1ToLocal(chapter.surahNo, verse)
+        }
+    }
+
+
+
+    fun getChapterArabic1(chapterId: Int) {
+        viewModelScope.launch {
+            val result = quranRepository.getChapterArabic1(chapterId)
+           // _arabic1.value
+            Log.d("Arabic", "Arabic1: $result")
+        }
+    }
+
 
 }

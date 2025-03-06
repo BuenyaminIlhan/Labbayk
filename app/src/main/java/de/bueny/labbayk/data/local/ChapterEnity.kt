@@ -49,6 +49,6 @@ data class ChapterAudio(
 data class ChapterArabic1(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val arabic1: List<String>,
+    val arabic1: String,
     val chapterId: Int
 )

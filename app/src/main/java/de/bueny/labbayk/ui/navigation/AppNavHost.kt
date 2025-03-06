@@ -37,9 +37,8 @@ fun AppNavHost(
         }
 
         composable<QuranListRoute> {
-            QuranListScreen(
-                quranList = quranList,
-                modifier = modifier
+            QuranListScreen(quranList,modifier, quranViewModel
+
             )
         }
     }
