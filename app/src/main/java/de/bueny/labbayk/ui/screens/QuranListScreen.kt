@@ -44,16 +44,17 @@ fun QuranListScreen(
     quranList: State<List<QuranListEntity>?>,
     modifier: Modifier,
     quranViewModel: QuranViewModel,
-
+    onItemClick: () -> Unit,
     ) {
-    Column{
+        Column{
         SearchField { }
 
         LazyColumn {
             itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
                 QuranListItem(
-                    chapter,index, quranViewModel
-                )
+                    chapter, index, quranViewModel,
+                    onItemClick = { onItemClick() }
+                ) 
             }
         }
     }
@@ -64,7 +65,8 @@ fun QuranListScreen(
 fun QuranListItem(
     chapter: QuranListEntity,
     index: Int,
-    quranViewModel: QuranViewModel
+    quranViewModel: QuranViewModel,
+    onItemClick: () -> Unit
 ) {
     val backgroundColor = if (index % 2 == 0) Color(0xFF90A4CE).copy(alpha = 0.6f)
     else Color(0xFFD2AC61).copy(alpha = 0.6f)
@@ -76,7 +78,7 @@ fun QuranListItem(
             modifier = Modifier
                 .clickable {
                     quranViewModel.getChapterArabic1(surahNo)
-
+                    onItemClick()
                 }
                 .fillMaxWidth()
                 .background(backgroundColor)

@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import de.bueny.labbayk.ui.QuranViewModel
+import de.bueny.labbayk.ui.screens.ChapterDetailScreen
 import de.bueny.labbayk.ui.screens.FavoritesScreen
 import de.bueny.labbayk.ui.screens.HomeScreen
 import de.bueny.labbayk.ui.screens.QuranListScreen
@@ -20,6 +21,7 @@ fun AppNavHost(
 ) {
 
     val quranList = quranViewModel.quranList.collectAsState()
+    val selectedChapter = quranViewModel.arabic1.collectAsState()
 
     NavHost(
         navController = navHostController,
@@ -37,9 +39,15 @@ fun AppNavHost(
         }
 
         composable<QuranListRoute> {
-            QuranListScreen(quranList,modifier, quranViewModel
-
+            QuranListScreen(
+                quranList, modifier, quranViewModel,
+                onItemClick = { navHostController.navigate(ChapterDetailRoute.route) },
             )
+        }
+
+        composable("chapterDetail") {
+            ChapterDetailScreen(modifier,selectedChapter) { }
+
         }
     }
 }

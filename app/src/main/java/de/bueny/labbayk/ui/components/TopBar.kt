@@ -28,7 +28,6 @@ fun TopBar(
     navigateUp: () -> Unit,
     canNavigateBack: Boolean,
     viewModel: QuranViewModel,
-    chapter: State<ChapterResponse?>,
     backgroundColor: Color = Color.Gray,
     onTitleChange: () -> Unit
 ) {

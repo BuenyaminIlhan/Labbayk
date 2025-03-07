@@ -24,23 +24,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import de.bueny.labbayk.data.remote.ChapterResponse
 import de.bueny.labbayk.util.customTextStyle
 import de.bueny.labbayk.util.toArabicNumber
 
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun QuranScreen(
+fun ChapterDetailScreen(
     modifier: Modifier = Modifier,
-    chapter: State<ChapterResponse?>,
+    chapter: State<List<String>?>,
     onVerseClick: (String) -> Unit
 ) {
     val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
@@ -77,7 +74,7 @@ fun QuranScreen(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                chapter.value?.arabic1.orEmpty().forEachIndexed { index, verse ->
+                chapter.value.orEmpty().forEachIndexed { index, verse ->
 
                     if(verse == bismillah) {
                         return@forEachIndexed
@@ -108,7 +105,7 @@ fun QuranScreen(
                             text = line,
                             modifier = Modifier
                                 .padding(1.dp)
-                                .clickable { chapter.value?.let { onVerseClick(it.english[index]) } },
+                                .clickable {  },
                             style = customTextStyle()
                         )
                     }

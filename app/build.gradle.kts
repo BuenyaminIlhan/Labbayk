@@ -89,6 +89,4 @@ dependencies {
     //Icon extended
     implementation(libs.androidx.compose.material.icons.extended)
 
-    //GSON Converter
-    implementation(libs.gson)
 }
