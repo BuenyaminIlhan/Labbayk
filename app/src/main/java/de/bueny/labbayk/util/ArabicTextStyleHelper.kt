@@ -7,9 +7,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
 fun customTextStyle() = TextStyle(
-    fontSize = 24.sp,
-    lineHeight = 30.sp,
-    fontWeight = FontWeight.Bold,
+    fontSize = 20.sp,
+    lineHeight = 28.sp,
+    fontWeight = FontWeight.Normal,
     fontFamily = FontFamily.Serif,
     textAlign = TextAlign.Right
 )

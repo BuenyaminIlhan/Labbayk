@@ -45,6 +45,7 @@ fun QuranListScreen(
     modifier: Modifier,
     quranViewModel: QuranViewModel,
     onItemClick: () -> Unit,
+    onTitleChange: (QuranListEntity) -> Unit
     ) {
         Column{
         SearchField { }
@@ -53,8 +54,9 @@ fun QuranListScreen(
             itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
                 QuranListItem(
                     chapter, index, quranViewModel,
-                    onItemClick = { onItemClick() }
-                ) 
+                    onItemClick = { onItemClick() },
+                    onTitleChange = onTitleChange
+                )
             }
         }
     }
@@ -66,7 +68,8 @@ fun QuranListItem(
     chapter: QuranListEntity,
     index: Int,
     quranViewModel: QuranViewModel,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
+    onTitleChange: (QuranListEntity) -> Unit
 ) {
     val backgroundColor = if (index % 2 == 0) Color(0xFF90A4CE).copy(alpha = 0.6f)
     else Color(0xFFD2AC61).copy(alpha = 0.6f)
@@ -79,6 +82,7 @@ fun QuranListItem(
                 .clickable {
                     quranViewModel.getChapterArabic1(surahNo)
                     onItemClick()
+                    onTitleChange(chapter)
                 }
                 .fillMaxWidth()
                 .background(backgroundColor)

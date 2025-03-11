@@ -1,5 +1,6 @@
 package de.bueny.labbayk.data.local
 
+import androidx.compose.runtime.MutableState
 import androidx.room.Entity
 
 @Entity(tableName = "quran_list", primaryKeys = ["surahName", "surahNameArabic"])

@@ -89,4 +89,7 @@ dependencies {
     //Icon extended
     implementation(libs.androidx.compose.material.icons.extended)
 
+    //ContextualFlowLayout
+    implementation(libs.androidx.foundation.layout)
+
 }

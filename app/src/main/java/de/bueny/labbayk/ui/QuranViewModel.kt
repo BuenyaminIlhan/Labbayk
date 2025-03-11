@@ -19,15 +19,12 @@ import kotlinx.coroutines.runBlocking
 class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
     private val quranRepository: QuranRepositoryInterface
-
-    //private val _chapter = MutableStateFlow<ChapterResponse?>(null)
-    //val chapter = _chapter
-
+    private val _arabic1 = MutableStateFlow<List<String>?>(null)
+    val arabic1 = _arabic1.asStateFlow()
     private val _quranList = MutableStateFlow<List<QuranListEntity>?>(null)
     val quranList = _quranList.asStateFlow()
 
     init {
-
         val quranDB = QuranDatabase.getDB(application)
         val quranListDao = quranDB.quranListDao
         val chapterDao = quranDB.chapterDao
@@ -37,8 +34,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         )
         loadQuranListToRoom()
         loadAllChaptersToRoom()
-        //getChapter()
-
     }
 
     private fun getQuranList() {
@@ -108,18 +103,11 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
-    private val _arabic1 = MutableStateFlow<List<String>?>(null)
-    val arabic1 = _arabic1.asStateFlow()
-
-
     fun getChapterArabic1(chapterId: Int) {
         viewModelScope.launch {
             val result = quranRepository.getChapterArabic1(chapterId)
+            Log.d("QuranViewModel", "getChapterArabic1: $result")
            _arabic1.value = result
-            Log.d("Arabic", "Arabic1: $result")
         }
     }
-
-
 }
