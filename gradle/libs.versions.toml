@@ -30,6 +30,7 @@ media3CommonKtx = "1.5.1"
 roomRuntime = "2.6.1"
 kspVersion = "2.0.21-1.0.27"
 databindingAdapters = "8.8.2"
+constraintlayoutComposeAndroid = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -77,6 +78,7 @@ androidx-databinding-adapters = { group = "androidx.databinding", name = "databi
 
 #Converter
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+androidx-constraintlayout-compose-android = { group = "androidx.constraintlayout", name = "constraintlayout-compose-android", version.ref = "constraintlayoutComposeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,6 +1,5 @@
 package de.bueny.labbayk.ui.screens
 
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -261,14 +262,15 @@ fun ChapterDetailScreen(
                 .fillMaxSize()
                 .padding(22.dp)
         ) {
-            DisplayBismillah()
 
             HorizontalPagerDisplay(
                 pagerState = pagerState,
                 filteredVerses = filteredVerses,
                 versePerPage = versePerPage,
                 startIndex = { page -> page * versePerPage },
-                endIndex = { page -> minOf((page + 1) * versePerPage, filteredVerses?.size ?: 0) }
+                endIndex = { page -> minOf((page + 1) * versePerPage, filteredVerses?.size ?: 0) },
+                currentPage = currentPage
+
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -291,9 +293,11 @@ fun calculatePageCount(filteredVerses: List<String>?, versePerPage: Int): Int {
 @Composable
 fun DisplayBismillah() {
     val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+
     Text(
         text = bismillah,
         style = MaterialTheme.typography.displaySmall,
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
@@ -309,10 +313,15 @@ fun HorizontalPagerDisplay(
     filteredVerses: List<String>?,
     versePerPage: Int,
     startIndex: (Int) -> Int,
-    endIndex: (Int) -> Int
+    endIndex: (Int) -> Int,
+    currentPage: Int
 ) {
     HorizontalPager(
         state = pagerState,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        verticalAlignment = Alignment.Top,
     ) { page ->
         val start = startIndex(page)
         val end = endIndex(page)
@@ -325,6 +334,9 @@ fun HorizontalPagerDisplay(
             filteredVerses
                 ?.subList(start, end)
                 ?.forEachIndexed { index, verse ->
+                    if (currentPage == 0 && start + index == 0) {
+                        DisplayBismillah()
+                    }
                     DisplayVerse(verse, start + index)
                 }
         }
@@ -366,6 +378,7 @@ fun DisplayVerse(verse: String, verseNumber: Int) {
                         .background(Color(0xFF4CAF50))
                 )
                 {
+
                     Text(
                         text = verseArabic,
                         modifier = Modifier.align(Alignment.Center)
