@@ -6,7 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -49,13 +58,9 @@ fun App() {
     Scaffold(
         containerColor = primaryBackgroundColor,
         topBar = {
-            if (selectedNavItem != NavigationItem.QuranList) {
-                TopBar(
-                    backgroundColor = primaryBackgroundColor,
-                    navigateUp = { },
-                    canNavigateBack = true,
-                    onTitleChange = { },
-                    viewModel = quranViewModel,
+            if (true) {
+                CustomTopBar(
+                    primaryBackgroundColor, quranViewModel,navHostController
                 )
             }
         },
@@ -83,9 +88,25 @@ fun App() {
     }
 }
 
-
-
-
-
-
-
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CustomTopBar(
+    primaryBackgroundColor: Color,
+    quranViewModel: QuranViewModel,
+    navController: NavController
+) {
+    TopAppBar(
+        title = {},
+        navigationIcon = {
+            IconButton(onClick = { navController.navigateUp() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Zurück"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = primaryBackgroundColor
+        )
+    )
+}

@@ -1,16 +1,25 @@
 package de.bueny.labbayk.ui.screens
 
+import android.util.Log
 import androidx.annotation.OptIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,10 +27,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.util.Log
+import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.util.toArabicNumber
@@ -219,76 +233,179 @@ import de.bueny.labbayk.util.toArabicNumber
 //    return lines
 //}
 
-
 @OptIn(UnstableApi::class)
 @Composable
 fun ChapterDetailScreen(
     modifier: Modifier = Modifier,
-    selectedChapter: State<List<String>?>,
-    selectedChapterTitle: QuranListEntity?,
+    selectedChapterArabic: State<List<String>?>,
+    selectedChapter: QuranListEntity?,
     function: () -> Unit
 ) {
-    val versePerPage = 11
-    val pageCount = (selectedChapter.value?.size?.plus(versePerPage - 1) ?: 0) / versePerPage
-    val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+    val versePerPage = 10
+    val filteredVerses =
+        selectedChapterArabic.value?.filter { it != "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ" }
+    val pageCount = calculatePageCount(filteredVerses, versePerPage)
+
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { pageCount }
     )
+
+    val currentPage = pagerState.currentPage
     val pageCountArabic = toArabicNumber(pageCount)
-    val currentPageArabic = toArabicNumber(pagerState.currentPage + 1)
-    if (selectedChapterTitle != null) {
-        Log.d("ChapterDetailScreen", selectedChapterTitle.surahNameArabic)
-    }
+    val currentPageArabic = toArabicNumber(currentPage + 1)
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
-            modifier = modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(22.dp)
         ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.weight(1f)
-            ) { page ->
-                val startIndex = page * versePerPage
-                val endIndex = minOf(startIndex + versePerPage, selectedChapter.value?.size ?: 0)
+            DisplayBismillah()
 
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(22.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    selectedChapter.value
-                        ?.subList(startIndex, endIndex)
-                        ?.flatMap { it.split(" ") }
-                        ?.forEach { word ->
-                            Text(
-                                text = word,
-                                modifier = Modifier.clickable { },
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                }
-            }
+            HorizontalPagerDisplay(
+                pagerState = pagerState,
+                filteredVerses = filteredVerses,
+                versePerPage = versePerPage,
+                startIndex = { page -> page * versePerPage },
+                endIndex = { page -> minOf((page + 1) * versePerPage, filteredVerses?.size ?: 0) }
+            )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (pageCount > 1) {
-                    Text(
-                        text = "$currentPageArabic / $pageCountArabic",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+            Spacer(modifier = Modifier.weight(1f))
 
-            }
+            PageNumberDisplay(currentPageArabic, pageCountArabic)
         }
     }
 }
+
+/**
+ * Berechnet die Anzahl der Seiten basierend auf der Anzahl der Verse und der Anzahl von Versen pro Seite.
+ */
+fun calculatePageCount(filteredVerses: List<String>?, versePerPage: Int): Int {
+    return (filteredVerses?.size?.plus(versePerPage - 1) ?: 0) / versePerPage
+}
+
+/**
+ * Zeigt den Bismillah-Text an.
+ */
+@Composable
+fun DisplayBismillah() {
+    val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+    Text(
+        text = bismillah,
+        style = MaterialTheme.typography.displaySmall,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+    )
+}
+
+/**
+ * Zeigt die Verse an, die in einem HorizontalPager angezeigt werden.
+ */
+@Composable
+fun HorizontalPagerDisplay(
+    pagerState: PagerState,
+    filteredVerses: List<String>?,
+    versePerPage: Int,
+    startIndex: (Int) -> Int,
+    endIndex: (Int) -> Int
+) {
+    HorizontalPager(
+        state = pagerState,
+    ) { page ->
+        val start = startIndex(page)
+        val end = endIndex(page)
+
+        FlowRow(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth()
+        ) {
+            filteredVerses
+                ?.subList(start, end)
+                ?.forEachIndexed { index, verse ->
+                    DisplayVerse(verse, start + index)
+                }
+        }
+    }
+}
+
+/**
+ * Zeigt einen einzelnen Vers mit seiner Nummer an.
+ */
+@Composable
+fun DisplayVerse(verse: String, verseNumber: Int) {
+    val verseArabic = toArabicNumber(verseNumber + 1)
+    val inlineContentId = "index"
+
+    val annotatedString = buildAnnotatedString {
+        append(verse)
+        appendInlineContent(inlineContentId, "[index]")
+    }
+
+    val inlineContent = mapOf(
+        inlineContentId to InlineTextContent(
+            Placeholder(
+                width = 24.sp,
+                height = 24.sp,
+                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
+            )
+        )
+        {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(20.dp)
+                        .height(30.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF4CAF50))
+                )
+                {
+                    Text(
+                        text = verseArabic,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+
+        }
+    )
+
+    Text(
+        text = annotatedString,
+        inlineContent = inlineContent,
+        modifier = Modifier.clickable {
+            println("Verse clicked!")
+        },
+        style = MaterialTheme.typography.bodyLarge
+    )
+}
+
+/**
+ * Zeigt die aktuelle Seitenzahl und die Gesamtseitenzahl an.
+ */
+@Composable
+fun PageNumberDisplay(currentPageArabic: String, pageCountArabic: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        if (pageCountArabic.isNotEmpty()) {
+            Text(
+                text = "$currentPageArabic / $pageCountArabic",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
 
 //
 //@Composable
