@@ -3,25 +3,26 @@ package de.bueny.labbayk.ui.screens
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -40,199 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.util.toArabicNumber
-
-//@OptIn(ExperimentalFoundationApi::class)
-//@Composable
-//fun ChapterDetailScreen(
-//    modifier: Modifier = Modifier,
-//    selectedChapter: State<List<String>?>,
-//    function: () -> Unit
-//) {
-//    val maxLinesPerPage = 15  // Maximal 15 Zeilen pro Seite
-//
-//    // Funktion zum Aufteilen der Verse in Seiten basierend auf der Zeilenanzahl
-//    val pages = remember(selectedChapter.value) {
-//        val allVerses = selectedChapter.value ?: emptyList()
-//        val pagesList = mutableListOf<List<String>>()
-//        var currentPage = mutableListOf<String>()
-//        var currentLineCount = 0
-//
-//        for (verse in allVerses) {
-//            val estimatedLines = estimateLineCount(verse)  // Zeilenanzahl für diesen Vers berechnen
-//
-//            if (currentLineCount + estimatedLines > maxLinesPerPage) {
-//                // Falls die max. Zeilenanzahl erreicht ist, erstelle eine neue Seite
-//                pagesList.add(currentPage)
-//                currentPage = mutableListOf()
-//                currentLineCount = 0
-//            }
-//
-//            currentPage.add(verse)
-//            currentLineCount += estimatedLines
-//        }
-//
-//        // Letzte Seite hinzufügen, falls noch Verse übrig sind
-//        if (currentPage.isNotEmpty()) {
-//            pagesList.add(currentPage)
-//        }
-//
-//        pagesList
-//    }
-//
-//    val pagerState = rememberPagerState { pages.size }
-//
-//    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-//        HorizontalPager(
-//            state = pagerState,
-//            modifier = modifier.fillMaxSize(),
-//        ) { pageIndex ->
-//            val currentPage = pages.getOrNull(pageIndex) ?: emptyList()
-//
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(16.dp),
-//                contentAlignment = Alignment.Center // Text vertikal zentrieren
-//            ) {
-//                Column(
-//                    verticalArrangement = Arrangement.spacedBy(8.dp),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    currentPage.forEach { verse ->
-//                        Text(
-//                            text = verse,
-//                            fontSize = 24.sp,
-//                            textAlign = TextAlign.Center,
-//                            lineHeight = 36.sp,
-//                            fontWeight = FontWeight.Bold,
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-///**
-// * Schätzt die Anzahl der Zeilen, die ein Vers einnimmt, basierend auf der Länge des Textes.
-// */
-//fun estimateLineCount(text: String): Int {
-//    val avgCharsPerLine = 45  // Durchschnittliche Zeichen pro Zeile (je nach Schriftgröße anpassen)
-//    return (text.length / avgCharsPerLine.toDouble()).coerceAtLeast(1.0).toInt()
-//}
-
-//
-//@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
-//@Composable
-//fun ChapterDetailScreen(
-//    modifier: Modifier = Modifier,
-//    chapter: State<List<String>?>,
-//    onVerseClick: (String) -> Unit
-//) {
-//    val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
-//
-//    // Verse in Zeilen aufteilen, basierend auf der verfügbaren Breite
-//    val lines = chapter.value?.flatMap { verse ->
-//        splitVerseIntoLines(verse)
-//    } ?: emptyList()
-//
-//    // Zeilen in Seiten aufteilen (max. 15 Zeilen pro Seite)
-//    val pages = lines.chunked(15)
-//
-//    // Initialisiere pagerState mit pageCount aus der Anzahl der Seiten
-//    val pagerState = rememberPagerState(
-//        initialPage = 0,
-//        pageCount = { pages.size }
-//    )
-//
-//    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-//        HorizontalPager(
-//            state = pagerState,
-//            modifier = modifier.fillMaxSize()
-//        ) { page ->
-//            val currentPageLines = pages.getOrNull(page) ?: emptyList()
-//
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(16.dp)
-//            ) {
-//
-//                Text(
-//                    text = bismillah,
-//                    style = customTextStyle().copy(
-//                        fontSize = 36.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        textAlign = TextAlign.Center
-//                    ),
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(bottom = 16.dp)
-//                )
-//
-//                // Zeilen innerhalb der Seite anzeigen
-//                currentPageLines.forEach { line ->
-//                    FlowRow(
-//                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-//                        modifier = Modifier.fillMaxWidth()
-//                    ) {
-//                        line.forEach { word ->
-//                            Text(
-//                                text = word,
-//                                modifier = Modifier
-//                                    .padding(1.dp)
-//                                    .clickable { onVerseClick(word) },
-//                                style = customTextStyle()
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                // Zeigt das Seitenindex an
-//                Box(
-//                    modifier = Modifier
-//                        .height(30.dp)
-//                        .width(14.dp)
-//                        .background(
-//                            color = Color(0xBE2A4073),
-//                            shape = CircleShape
-//                        )
-//                        .wrapContentSize(Alignment.Center)
-//                ) {
-//                    Text(
-//                        text = (page + 1).toString(),
-//                        color = Color.White,
-//                        style = customTextStyle().copy(
-//                            fontSize = 12.sp,
-//                            fontWeight = FontWeight.Normal
-//                        ),
-//                        modifier = Modifier.align(Alignment.Center)
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//// Hilfsfunktion für das Aufteilen eines Verses in Zeilen, basierend auf der verfügbaren Breite
-//fun splitVerseIntoLines(verse: String): List<List<String>> {
-//    val words = verse.split(" ")
-//    val lines = mutableListOf<List<String>>()
-//    var currentLine = mutableListOf<String>()
-//
-//    for (word in words) {
-//        // Füge das Wort zur aktuellen Zeile hinzu
-//        currentLine.add(word)
-//        // Die Zeile wird erst hinzugefügt, wenn die nächste Zeile beginnt
-//        // oder wenn der Vers zu Ende ist
-//    }
-//    // Die letzte Zeile hinzufügen
-//    if (currentLine.isNotEmpty()) {
-//        lines.add(currentLine)
-//    }
-//
-//    return lines
-//}
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -269,8 +78,8 @@ fun ChapterDetailScreen(
                 versePerPage = versePerPage,
                 startIndex = { page -> page * versePerPage },
                 endIndex = { page -> minOf((page + 1) * versePerPage, filteredVerses?.size ?: 0) },
-                currentPage = currentPage
-
+                currentPage = currentPage,
+                onVerseClick = {}
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -304,9 +113,6 @@ fun DisplayBismillah() {
     )
 }
 
-/**
- * Zeigt die Verse an, die in einem HorizontalPager angezeigt werden.
- */
 @Composable
 fun HorizontalPagerDisplay(
     pagerState: PagerState,
@@ -314,6 +120,7 @@ fun HorizontalPagerDisplay(
     versePerPage: Int,
     startIndex: (Int) -> Int,
     endIndex: (Int) -> Int,
+    onVerseClick: (String) -> Unit,
     currentPage: Int
 ) {
     HorizontalPager(
@@ -327,76 +134,93 @@ fun HorizontalPagerDisplay(
         val end = endIndex(page)
 
         FlowRow(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            filteredVerses
-                ?.subList(start, end)
+            // Nur die Verse für die aktuelle Seite anzeigen
+            filteredVerses?.subList(start, end.coerceAtMost(filteredVerses.size))
                 ?.forEachIndexed { index, verse ->
-                    if (currentPage == 0 && start + index == 0) {
-                        DisplayBismillah()
-                    }
-                    DisplayVerse(verse, start + index)
+                    DisplayVerse(verse, start + index, onVerseClick) // Korrigierter Index
                 }
         }
     }
 }
 
-/**
- * Zeigt einen einzelnen Vers mit seiner Nummer an.
- */
 @Composable
-fun DisplayVerse(verse: String, verseNumber: Int) {
-    val verseArabic = toArabicNumber(verseNumber + 1)
-    val inlineContentId = "index"
+private fun DisplayVerse(
+    verse: String,
+    index: Int,
+    onVerseClick: (String) -> Unit
+) {
+    val indexArabic = toArabicNumber(index + 1)
 
     val annotatedString = buildAnnotatedString {
         append(verse)
-        appendInlineContent(inlineContentId, "[index]")
+        append(" ")
+        appendInlineContent("indexTag", "[index]")
     }
 
     val inlineContent = mapOf(
-        inlineContentId to InlineTextContent(
+        "indexTag" to InlineTextContent(
             Placeholder(
-                width = 24.sp,
-                height = 24.sp,
-                placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
+                width = 20.sp,
+                height = 20.sp,
+                placeholderVerticalAlign = PlaceholderVerticalAlign.Center
             )
-        )
-        {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(35))
+                    .background(Color(0xFF4CAF50))
+                    .padding(horizontal = 4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .width(20.dp)
-                        .height(30.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF4CAF50))
-                )
-                {
-
-                    Text(
-                        text = verseArabic,
-                        modifier = Modifier.align(Alignment.Center)
+                Text(
+                    text = indexArabic,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                     )
-                }
             }
-
         }
     )
 
     Text(
+        modifier = Modifier
+            .clickable {},
         text = annotatedString,
         inlineContent = inlineContent,
-        modifier = Modifier.clickable {
-            println("Verse clicked!")
-        },
+        fontSize = 16.sp,
         style = MaterialTheme.typography.bodyLarge
     )
+}
+
+
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetDisplay(
+    isSheetOpen: Boolean,
+    onDismissRequest: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false,
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (isSheetOpen) {
+            ModalBottomSheet(
+                modifier = Modifier.fillMaxHeight(),
+                sheetState = sheetState,
+                onDismissRequest = { onDismissRequest() }
+            ) {
+                Text(
+                    "Swipe up to open sheet. Swipe down to dismiss.",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+    }
 }
 
 /**
@@ -418,49 +242,3 @@ fun PageNumberDisplay(currentPageArabic: String, pageCountArabic: String) {
         }
     }
 }
-
-
-//
-//@Composable
-//private fun ExtractWordsWithVerseNumbers(
-//    selectedChapter: State<List<String>?>,
-//    words: MutableList<String>
-//) {
-//    val bismillah = "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
-//    val verses = selectedChapter.value.orEmpty()
-//    val hasBismillah = verses.firstOrNull() == bismillah
-//
-//    verses.forEachIndexed { index, verse ->
-//        if (hasBismillah) {
-//            if (index == 0) {
-//                words.addAll(verse.split(" "))
-//            } else {
-//                val arabicNum = toArabicNumber(index)
-//                words.addAll(verse.split(" ") + arabicNum)
-//            }
-//        } else {
-//            val arabicNum = toArabicNumber(index + 1)
-//            words.addAll(verse.split(" ") + arabicNum)
-//        }
-//    }
-//}
-//
-//
-//private fun putWordsInLine(
-//    words: MutableList<String>,
-//    currentLine: String,
-//    lines: MutableList<String>
-//): String {
-//
-//    val maxCharsPerLine = 104
-//    var currentLine1 = currentLine
-//    words.forEach { word ->
-//        if (("$currentLine1 $word").trim().length <= maxCharsPerLine) {
-//            currentLine1 = "$currentLine1 $word"
-//        } else {
-//            lines.add(currentLine1.trim())
-//            currentLine1 = word
-//        }
-//    }
-//    return currentLine1
-//}
