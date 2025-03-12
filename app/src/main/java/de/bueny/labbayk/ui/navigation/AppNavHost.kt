@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -58,8 +57,6 @@ fun AppNavHost(
                 },
                 onItemClick = { navHostController.navigate("chapterDetail") }
             )
-
-            Log.d("AppNavHost", "selectedChapter: $selectedChapterTitle")
         }
 
         composable("chapterDetail") {

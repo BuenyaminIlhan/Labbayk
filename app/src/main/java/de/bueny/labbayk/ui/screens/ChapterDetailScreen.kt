@@ -1,5 +1,6 @@
 package de.bueny.labbayk.ui.screens
 
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
+import de.bueny.labbayk.data.local.ChapterEntity
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.util.toArabicNumber
 
@@ -55,10 +57,11 @@ fun ChapterDetailScreen(
     selectedChapter: QuranListEntity?,
     function: () -> Unit
 ) {
-    val versePerPage = 10
+    val versePerPage = 6
     val filteredVerses =
         selectedChapterArabic.value?.filter { it != "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ" }
     val pageCount = calculatePageCount(filteredVerses, versePerPage)
+    var isSheetOpen by remember { mutableStateOf(false) }
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -75,7 +78,7 @@ fun ChapterDetailScreen(
                 .fillMaxSize()
                 .padding(22.dp)
         ) {
-
+            println("selected: ${selectedChapterArabic.value.toString()}")
             HorizontalPagerDisplay(
                 pagerState = pagerState,
                 filteredVerses = filteredVerses,
@@ -83,11 +86,13 @@ fun ChapterDetailScreen(
                 startIndex = { page -> page * versePerPage },
                 endIndex = { page -> minOf((page + 1) * versePerPage, filteredVerses?.size ?: 0) },
                 currentPage = currentPage,
-                onVerseClick = {}
+                onVerseClick = { isSheetOpen = true }
             )
 
             Spacer(modifier = Modifier.weight(1f))
-
+            BottomSheetDisplay(
+                isSheetOpen = isSheetOpen
+            ) { isSheetOpen = false }
             PageNumberDisplay(currentPageArabic, pageCountArabic)
         }
     }
@@ -109,11 +114,10 @@ fun DisplayBismillah() {
 
     Text(
         text = bismillah,
-        style = MaterialTheme.typography.displaySmall,
+        fontSize = 24.sp,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
     )
 }
 
@@ -124,7 +128,7 @@ fun HorizontalPagerDisplay(
     versePerPage: Int,
     startIndex: (Int) -> Int,
     endIndex: (Int) -> Int,
-    onVerseClick: (String) -> Unit,
+    onVerseClick: () -> Unit,
     currentPage: Int
 ) {
     HorizontalPager(
@@ -140,10 +144,13 @@ fun HorizontalPagerDisplay(
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            filteredVerses?.subList(start, end.coerceAtMost(filteredVerses.size))
+            filteredVerses
+                ?.subList(start, end)
                 ?.forEachIndexed { index, verse ->
-                    DisplayVerse(
-                        verse, start + index, onVerseClick)
+                    if (currentPage == 0 && start + index == 0) {
+                        DisplayBismillah()
+                    }
+                    DisplayVerse(verse, start + index, onVerseClick)
                 }
         }
     }
@@ -153,10 +160,9 @@ fun HorizontalPagerDisplay(
 private fun DisplayVerse(
     verse: String,
     index: Int,
-    onVerseClick: (String) -> Unit
+    onVerseClick: () -> Unit
 ) {
     val indexArabic = toArabicNumber(index + 1)
-    var isSheetOpen by remember { mutableStateOf(false) }
     val annotatedString = buildAnnotatedString {
         append(verse)
         append(" ")
@@ -180,7 +186,7 @@ private fun DisplayVerse(
 
                 Text(
                     text = indexArabic,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -190,18 +196,12 @@ private fun DisplayVerse(
 
     Text(
         modifier = Modifier
-            .clickable { isSheetOpen = true },
+            .clickable { onVerseClick() },
         text = annotatedString,
         inlineContent = inlineContent,
         fontSize = 16.sp,
         style = MaterialTheme.typography.bodyLarge
     )
-
-
-        BottomSheetDisplay(
-            isSheetOpen = isSheetOpen
-        ) { isSheetOpen = false }
-
 }
 
 

@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.QuranDatabase
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.data.remote.ChapterAudioResponse
@@ -19,7 +20,7 @@ import kotlinx.coroutines.runBlocking
 class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
     private val quranRepository: QuranRepositoryInterface
-    private val _arabic1 = MutableStateFlow<List<String>?>(null)
+    private val _arabic1 = MutableStateFlow<ChapterArabic1?>(null)
     val arabic1 = _arabic1.asStateFlow()
     private val _quranList = MutableStateFlow<List<QuranListEntity>?>(null)
     val quranList = _quranList.asStateFlow()

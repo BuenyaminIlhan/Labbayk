@@ -26,7 +26,7 @@ interface QuranRepositoryInterface {
 
     suspend fun getChapterCount(): Int
     suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String)
-    suspend fun getChapterArabic1(chapterId: Int): List<String>
+    suspend fun getChapterArabic1(chapterId: Int): ChapterArabic1
 }
 
 class QuranRepository(
@@ -105,10 +105,7 @@ class QuranRepository(
         chapterDao.insertChapterArabic1(arabic1Entity)
     }
 
-    override suspend fun getChapterArabic1(chapterId: Int): List<String> {
+    override suspend fun getChapterArabic1(chapterId: Int): ChapterArabic1 {
         return chapterDao.getChapterArabic1(chapterId)
     }
-
-
-
 }

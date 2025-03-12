@@ -13,7 +13,6 @@ interface ChapterDao {
     @Query("SELECT COUNT(*) FROM chapter")
     suspend fun getChapterCount(): Int
 
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertChapterAudios(audios: ChapterAudio)
 
@@ -24,6 +23,5 @@ interface ChapterDao {
     suspend fun insertChapterArabic1(arabic1: ChapterArabic1)
 
     @Query("SELECT arabic1 FROM chapter_arabic1 WHERE chapterId = :chapterId")
-    suspend fun getChapterArabic1(chapterId: Int): List<String>
-
+    suspend fun getChapterArabic1(chapterId: Int): ChapterArabic1?
 }
