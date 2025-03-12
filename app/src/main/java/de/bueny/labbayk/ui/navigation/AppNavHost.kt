@@ -35,9 +35,6 @@ fun AppNavHost(
     val selectedChapter = quranViewModel.arabic1.collectAsState()
     var selectedChapterTitle by remember { mutableStateOf<QuranListEntity?>(null) }
 
-
-
-
     NavHost(
         navController = navHostController,
         startDestination = selectedNavItem.route,

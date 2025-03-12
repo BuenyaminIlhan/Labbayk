@@ -26,6 +26,10 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -136,10 +140,10 @@ fun HorizontalPagerDisplay(
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            // Nur die Verse für die aktuelle Seite anzeigen
             filteredVerses?.subList(start, end.coerceAtMost(filteredVerses.size))
                 ?.forEachIndexed { index, verse ->
-                    DisplayVerse(verse, start + index, onVerseClick) // Korrigierter Index
+                    DisplayVerse(
+                        verse, start + index, onVerseClick)
                 }
         }
     }
@@ -152,7 +156,7 @@ private fun DisplayVerse(
     onVerseClick: (String) -> Unit
 ) {
     val indexArabic = toArabicNumber(index + 1)
-
+    var isSheetOpen by remember { mutableStateOf(false) }
     val annotatedString = buildAnnotatedString {
         append(verse)
         append(" ")
@@ -173,24 +177,31 @@ private fun DisplayVerse(
                     .background(Color(0xFF4CAF50))
                     .padding(horizontal = 4.dp)
             ) {
+
                 Text(
                     text = indexArabic,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
-                    )
+                )
             }
         }
     )
 
     Text(
         modifier = Modifier
-            .clickable {},
+            .clickable { isSheetOpen = true },
         text = annotatedString,
         inlineContent = inlineContent,
         fontSize = 16.sp,
         style = MaterialTheme.typography.bodyLarge
     )
+
+
+        BottomSheetDisplay(
+            isSheetOpen = isSheetOpen
+        ) { isSheetOpen = false }
+
 }
 
 
