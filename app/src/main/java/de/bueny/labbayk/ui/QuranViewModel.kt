@@ -9,7 +9,8 @@ import de.bueny.labbayk.data.local.QuranDatabase
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.data.remote.ChapterAudioResponse
 import de.bueny.labbayk.data.remote.ChapterResponse
-import de.bueny.labbayk.data.remote.QuranApi
+import de.bueny.labbayk.data.remote.QuranApiArabic
+import de.bueny.labbayk.data.remote.QuranApiGerman
 import de.bueny.labbayk.data.repository.QuranRepository
 import de.bueny.labbayk.data.repository.QuranRepositoryInterface
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ import kotlinx.coroutines.runBlocking
 class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
     private val quranRepository: QuranRepositoryInterface
-    private val _arabic1 = MutableStateFlow<ChapterArabic1?>(null)
+    private val _arabic1 = MutableStateFlow<List<ChapterArabic1>?>(null)
     val arabic1 = _arabic1.asStateFlow()
     private val _quranList = MutableStateFlow<List<QuranListEntity>?>(null)
     val quranList = _quranList.asStateFlow()
@@ -28,13 +29,15 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val quranDB = QuranDatabase.getDB(application)
         val quranListDao = quranDB.quranListDao
-        val chapterDao = quranDB.chapterDao
+        val chapterArabicDao = quranDB.chapterArabicDao
+        val cahapterGermanDao = quranDB.chapterGermanDao
 
         quranRepository = QuranRepository(
-            QuranApi, quranListDao, chapterDao
+            QuranApiArabic, QuranApiGerman, quranListDao, cahapterGermanDao, chapterArabicDao
         )
         loadQuranListToRoom()
         loadAllChaptersToRoom()
+        getChapterGerman()
     }
 
     private fun getQuranList() {
@@ -44,6 +47,20 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
                 val list: List<QuranListEntity> = quranList
                 _quranList.value = list
                 Log.d("QuranViewModel", "Quran List: $quranList")
+            } catch (e: Exception) {
+                Log.d("QuranViewModel", "Error: ${e.message}")
+            }
+        }
+    }
+
+    private fun getChapterGerman() {
+        viewModelScope.launch {
+            try {
+                val chapterResponse = quranRepository.getChapterGerman()
+
+                val verseMap = chapterResponse.quran
+                val verseList = verseMap.values.toList()
+                Log.d("QuranViewModel", "Verse List: $verseList")
             } catch (e: Exception) {
                 Log.d("QuranViewModel", "Error: ${e.message}")
             }
@@ -104,11 +121,14 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getChapterArabic1(chapterId: Int) {
+   fun getChapterArabic1(chapterId: Int) {
         viewModelScope.launch {
-            val result = quranRepository.getChapterArabic1(chapterId)
-            Log.d("QuranViewModel", "getChapterArabic1: $result")
-           _arabic1.value = result
+            try {
+                val result = quranRepository.getChapterArabic1(chapterId)
+                _arabic1.value = result
+            } catch (e: Exception) {
+                Log.d("QuranViewModel", "Error: ${e.message}")
+            }
         }
     }
 }

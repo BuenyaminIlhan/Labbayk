@@ -1,16 +1,26 @@
 package de.bueny.labbayk.data.local
 
 import android.content.Context
-import androidx.databinding.adapters.Converters
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import de.bueny.labbayk.data.remote.QuranVerseGerman
 
-@Database(entities = [QuranListEntity::class, ChapterEntity::class, ChapterAudio::class, ChapterArabic1::class], version = 1, exportSchema = false)
+@Database(
+    entities = [
+        QuranListEntity::class,
+        ChapterEntity::class,
+        ChapterAudio::class,
+        ChapterArabic1::class,
+        QuranVerseGerman::class
+    ],
+    version = 1,
+    exportSchema = false
+)
 abstract class QuranDatabase : RoomDatabase() {
     abstract val quranListDao: QuranListDao
-    abstract val chapterDao: ChapterDao
+    abstract val chapterArabicDao: ChapterArabicDao
+    abstract val chapterGermanDao: ChapterGermanDao
 
     companion object {
         private var Instance: QuranDatabase? = null

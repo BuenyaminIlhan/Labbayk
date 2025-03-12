@@ -8,17 +8,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
-interface QuranApiInterface {
 
-    @GET("api/{surahNumber}.json")
-    suspend fun getChapter(@Path("surahNumber") surahNumber: Int): ChapterResponse
-
-    @GET("api/surah.json")
-    suspend fun  getQuranList(): List<ChapterListResponse>
+interface QuranApiInterfaceGerman {
+    @GET("editions/deu-asfbubenheimand-la.json")
+    suspend fun getChapter(): ChapterResponseGerman
 }
 
-object QuranApi {
-    private const val BASE_URL = "https://quranapi.pages.dev/"
+
+object QuranApiGerman {
+    const val BASE_URL = "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/"
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     private val logger =
         HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
@@ -29,6 +27,5 @@ object QuranApi {
         .client(client)
         .build()
 
-    val service: QuranApiInterface by lazy { retrofit.create(QuranApiInterface::class.java) }
-
+    val service: QuranApiInterfaceGerman by lazy { retrofit.create(QuranApiInterfaceGerman::class.java) }
 }

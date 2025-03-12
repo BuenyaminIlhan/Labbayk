@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
-import de.bueny.labbayk.data.local.ChapterEntity
+import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.util.toArabicNumber
 
@@ -53,13 +53,17 @@ import de.bueny.labbayk.util.toArabicNumber
 @Composable
 fun ChapterDetailScreen(
     modifier: Modifier = Modifier,
-    selectedChapterArabic: State<List<String>?>,
+    selectedChapterArabic: State<List<ChapterArabic1>?>,
     selectedChapter: QuranListEntity?,
     function: () -> Unit
 ) {
     val versePerPage = 6
-    val filteredVerses =
-        selectedChapterArabic.value?.filter { it != "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ" }
+    val filteredVerses = selectedChapterArabic.value?.let { arabicList ->
+        arabicList.filter { verse ->
+            verse.arabic1 != "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"
+        }
+    }
+
     val pageCount = calculatePageCount(filteredVerses, versePerPage)
     var isSheetOpen by remember { mutableStateOf(false) }
 
@@ -101,7 +105,7 @@ fun ChapterDetailScreen(
 /**
  * Berechnet die Anzahl der Seiten basierend auf der Anzahl der Verse und der Anzahl von Versen pro Seite.
  */
-fun calculatePageCount(filteredVerses: List<String>?, versePerPage: Int): Int {
+fun calculatePageCount(filteredVerses: List<ChapterArabic1>?, versePerPage: Int): Int {
     return (filteredVerses?.size?.plus(versePerPage - 1) ?: 0) / versePerPage
 }
 
@@ -124,12 +128,12 @@ fun DisplayBismillah() {
 @Composable
 fun HorizontalPagerDisplay(
     pagerState: PagerState,
-    filteredVerses: List<String>?,
-    versePerPage: Int,
+    filteredVerses: List<ChapterArabic1>?,
     startIndex: (Int) -> Int,
     endIndex: (Int) -> Int,
     onVerseClick: () -> Unit,
-    currentPage: Int
+    currentPage: Int,
+    versePerPage: Int
 ) {
     HorizontalPager(
         state = pagerState,
@@ -158,13 +162,15 @@ fun HorizontalPagerDisplay(
 
 @Composable
 private fun DisplayVerse(
-    verse: String,
+    verse: ChapterArabic1?,
     index: Int,
     onVerseClick: () -> Unit
 ) {
     val indexArabic = toArabicNumber(index + 1)
     val annotatedString = buildAnnotatedString {
-        append(verse)
+        if (verse != null) {
+            append(verse.arabic1)
+        }
         append(" ")
         appendInlineContent("indexTag", "[index]")
     }
@@ -196,7 +202,9 @@ private fun DisplayVerse(
 
     Text(
         modifier = Modifier
-            .clickable { onVerseClick() },
+            .clickable { onVerseClick()
+                       Log.d("ChapterDetailScreen", "Verse clicked: ${index + 1}")
+                       },
         text = annotatedString,
         inlineContent = inlineContent,
         fontSize = 16.sp,

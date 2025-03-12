@@ -3,19 +3,23 @@ package de.bueny.labbayk.data.repository
 import androidx.room.Dao
 import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.ChapterAudio
-import de.bueny.labbayk.data.local.ChapterDao
+import de.bueny.labbayk.data.local.ChapterArabicDao
 import de.bueny.labbayk.data.local.ChapterEntity
+import de.bueny.labbayk.data.local.ChapterGermanDao
 import de.bueny.labbayk.data.local.QuranListDao
 import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.data.remote.ChapterAudioResponse
 import de.bueny.labbayk.data.remote.ChapterListResponse
 import de.bueny.labbayk.data.remote.ChapterResponse
-import de.bueny.labbayk.data.remote.QuranApi
+import de.bueny.labbayk.data.remote.ChapterResponseGerman
+import de.bueny.labbayk.data.remote.QuranApiArabic
+import de.bueny.labbayk.data.remote.QuranApiGerman
 
 @Dao
 interface QuranRepositoryInterface {
     suspend fun getChapter(surahNumber: Int): ChapterResponse
     suspend fun getQuranList(): List<ChapterListResponse>
+    suspend fun getChapterGerman(): ChapterResponseGerman
     suspend fun getQuranListFromLocal(): List<QuranListEntity>
     suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>)
     suspend fun insertChapterToLocal(chapter: ChapterResponse)
@@ -26,13 +30,15 @@ interface QuranRepositoryInterface {
 
     suspend fun getChapterCount(): Int
     suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String)
-    suspend fun getChapterArabic1(chapterId: Int): ChapterArabic1
+    suspend fun getChapterArabic1(chapterId: Int): List<ChapterArabic1>
 }
 
 class QuranRepository(
-    private val quranApi: QuranApi,
+    private val quranApi: QuranApiArabic,
+    private val quranApiGerman: QuranApiGerman,
     private val quranListDao: QuranListDao,
-    private val chapterDao: ChapterDao
+    private val chapterGermanDao: ChapterGermanDao,
+    private val chapterArabicDao: ChapterArabicDao
 ) : QuranRepositoryInterface {
 
     override suspend fun getChapter(surahNumber: Int): ChapterResponse {
@@ -41,8 +47,7 @@ class QuranRepository(
 
     override suspend fun getQuranList(): List<ChapterListResponse> {
         return quranApi.service.getQuranList()
-
-    }
+   }
 
     override suspend fun getQuranListFromLocal(): List<QuranListEntity> {
         return quranListDao.getAllQuranList()
@@ -73,7 +78,7 @@ class QuranRepository(
             surahNo = chapter.surahNo
         )
 
-        chapterDao.insertChapter(chapterEntity)
+        chapterArabicDao.insertChapter(chapterEntity)
     }
 
 
@@ -89,12 +94,11 @@ class QuranRepository(
                 originalUrl = entry.value.originalUrl
             )
         }
-        audioEntities.forEach { chapterDao.insertChapterAudios(it) }
+        audioEntities.forEach { chapterArabicDao.insertChapterAudios(it) }
     }
 
-
     override suspend fun getChapterCount(): Int {
-        return chapterDao.getChapterCount()
+        return chapterArabicDao.getChapterCount()
     }
 
     override suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String) {
@@ -102,10 +106,14 @@ class QuranRepository(
             chapterId = chapterId,
             arabic1 = arabic1
         )
-        chapterDao.insertChapterArabic1(arabic1Entity)
+        chapterArabicDao.insertChapterArabic1(arabic1Entity)
     }
 
-    override suspend fun getChapterArabic1(chapterId: Int): ChapterArabic1 {
-        return chapterDao.getChapterArabic1(chapterId)
+    override suspend fun getChapterArabic1(chapterId: Int): List<ChapterArabic1> {
+        return chapterArabicDao.getArabicVersesByChapterId(chapterId)
+    }
+
+    override suspend fun getChapterGerman(): ChapterResponseGerman {
+        return quranApiGerman.service.getChapter()
     }
 }

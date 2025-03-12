@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface ChapterDao {
+interface ChapterArabicDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertChapter(chapter: ChapterEntity)
 
@@ -22,6 +22,6 @@ interface ChapterDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertChapterArabic1(arabic1: ChapterArabic1)
 
-    @Query("SELECT arabic1 FROM chapter_arabic1 WHERE chapterId = :chapterId")
-    suspend fun getChapterArabic1(chapterId: Int): ChapterArabic1?
+    @Query("SELECT * FROM chapter_arabic1 WHERE chapterId = :chapterId")
+    suspend fun getArabicVersesByChapterId(chapterId: Int): List<ChapterArabic1>
 }
