@@ -14,6 +14,7 @@ import de.bueny.labbayk.data.remote.ChapterResponse
 import de.bueny.labbayk.data.remote.ChapterResponseGerman
 import de.bueny.labbayk.data.remote.QuranApiArabic
 import de.bueny.labbayk.data.remote.QuranApiGerman
+import de.bueny.labbayk.data.remote.QuranVerseGerman
 
 @Dao
 interface QuranRepositoryInterface {
@@ -23,6 +24,8 @@ interface QuranRepositoryInterface {
     suspend fun getQuranListFromLocal(): List<QuranListEntity>
     suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>)
     suspend fun insertChapterToLocal(chapter: ChapterResponse)
+    suspend fun insertGermanVersesToLocal(verses: QuranVerseGerman)
+    suspend fun getGermanVerses(chapterNumber: Int): List<QuranVerseGerman>
     suspend fun insertChapterAudiosToLocal(
         chapterId: Int,
         audios: Map<String, ChapterAudioResponse>
@@ -81,6 +84,13 @@ class QuranRepository(
         chapterArabicDao.insertChapter(chapterEntity)
     }
 
+    override suspend fun insertGermanVersesToLocal(verses: QuranVerseGerman) {
+        chapterGermanDao.insertAll(listOf(verses))
+    }
+
+    override suspend fun getGermanVerses(chapterNumber: Int): List<QuranVerseGerman> {
+        return chapterGermanDao.getAllGermanVerses(chapterNumber)
+    }
 
     override suspend fun insertChapterAudiosToLocal(
         chapterId: Int,

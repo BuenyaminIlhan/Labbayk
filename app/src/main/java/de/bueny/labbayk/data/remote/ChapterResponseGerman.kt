@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import de.bueny.labbayk.data.local.ChapterEntity
 
 data class ChapterResponseGerman(
-    val quran: Map<String, QuranVerseGermanResponse>
+    val quran: List<QuranVerseGermanResponse>
 )
 
 data class QuranVerseGermanResponse(
@@ -15,19 +15,12 @@ data class QuranVerseGermanResponse(
     val text: String
 )
 
-@Entity(tableName = "quran_verse_german",
-    foreignKeys = [ForeignKey(
-        entity = ChapterEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["chapterId"],
-        onDelete = ForeignKey.CASCADE
-    )]
-)
+@Entity(tableName = "quran_verse_german")
 data class QuranVerseGerman(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val chapter: Int,
     val verse: Int,
     val text: String,
-    val chapterId: Int
 )
+

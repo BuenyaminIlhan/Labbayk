@@ -80,7 +80,7 @@ fun QuranListItem(
         Box(
             modifier = Modifier
                 .clickable {
-                    quranViewModel.getChapterArabic1(surahNo)
+                    quranViewModel.getArabicChapterFormDB(surahNo)
                     onItemClick()
                     onTitleChange(chapter)
                 }

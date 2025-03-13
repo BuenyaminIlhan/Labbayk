@@ -11,6 +11,7 @@ import de.bueny.labbayk.data.remote.ChapterAudioResponse
 import de.bueny.labbayk.data.remote.ChapterResponse
 import de.bueny.labbayk.data.remote.QuranApiArabic
 import de.bueny.labbayk.data.remote.QuranApiGerman
+import de.bueny.labbayk.data.remote.QuranVerseGerman
 import de.bueny.labbayk.data.repository.QuranRepository
 import de.bueny.labbayk.data.repository.QuranRepositoryInterface
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,8 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     val arabic1 = _arabic1.asStateFlow()
     private val _quranList = MutableStateFlow<List<QuranListEntity>?>(null)
     val quranList = _quranList.asStateFlow()
+    private val _germanVerses = MutableStateFlow<List<QuranVerseGerman>?>(null)
+    val germanVerses = _germanVerses.asStateFlow()
 
     init {
         val quranDB = QuranDatabase.getDB(application)
@@ -35,9 +38,21 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         quranRepository = QuranRepository(
             QuranApiArabic, QuranApiGerman, quranListDao, cahapterGermanDao, chapterArabicDao
         )
-        loadQuranListToRoom()
-        loadAllChaptersToRoom()
-        getChapterGerman()
+        insertAllChaptersToDB()
+        insertAllArabicChapterToDB()
+    }
+
+    private fun getGermanVerseFromDB(chapterNumber: Int) {
+        viewModelScope.launch {
+            try {
+                val germanVerses = quranRepository.getGermanVerses(chapterNumber)
+                _germanVerses.value = germanVerses
+
+                Log.d("QuranViewModel getGermanVerseFromDB", "Verse List: $germanVerses")
+            } catch (e: Exception) {
+                Log.d("QuranViewModel getGermanVerseFromDB", "Error: ${e.message}")
+            }
+        }
     }
 
     private fun getQuranList() {
@@ -46,48 +61,58 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
                 val quranList = quranRepository.getQuranListFromLocal()
                 val list: List<QuranListEntity> = quranList
                 _quranList.value = list
-                Log.d("QuranViewModel", "Quran List: $quranList")
             } catch (e: Exception) {
-                Log.d("QuranViewModel", "Error: ${e.message}")
+                Log.d("QuranViewModel getQuranList", "Error: ${e.message}")
             }
         }
     }
 
-    private fun getChapterGerman() {
-        viewModelScope.launch {
-            try {
-                val chapterResponse = quranRepository.getChapterGerman()
-
-                val verseMap = chapterResponse.quran
-                val verseList = verseMap.values.toList()
-                Log.d("QuranViewModel", "Verse List: $verseList")
-            } catch (e: Exception) {
-                Log.d("QuranViewModel", "Error: ${e.message}")
-            }
-        }
-    }
-
-    private fun loadQuranListToRoom() = runBlocking {
+    private fun insertAllChaptersToDB() = runBlocking {
 
         viewModelScope.launch {
 
             val localData = quranRepository.getQuranListFromLocal()
             if (localData.isEmpty()) {
                 try {
+                    runBlocking {
+                        insertGermanVersesToRoom()
+                    }
                     val quranList = quranRepository.getQuranList()
+
                     runBlocking {
                         val result = launch { quranRepository.insertQuranListToLocal(quranList) }
                         result.join()
                     }
                 } catch (e: Exception) {
-                    Log.e("QuranViewModel", "Fehler: ${e.message}")
+                    Log.e("QuranViewModel insertAllChaptersToDB", "Fehler: ${e.message}")
                 }
             }
             getQuranList()
         }
     }
 
-    private fun loadAllChaptersToRoom() {
+
+    private fun insertGermanVersesToRoom() {
+        viewModelScope.launch {
+            try {
+                val chapterResponse = quranRepository.getChapterGerman()
+                val verseList = chapterResponse.quran.toList()
+
+                for (verse in verseList) {
+                    val quranVerse = QuranVerseGerman(
+                        chapter = verse.chapter,
+                        verse = verse.verse,
+                        text = verse.text,
+                    )
+                    quranRepository.insertGermanVersesToLocal(quranVerse)
+                }
+            } catch (e: Exception) {
+                Log.d("QuranViewModel insertGermanVersesToRoom", "Error: ${e.message}")
+            }
+        }
+    }
+
+    private fun insertAllArabicChapterToDB() {
         viewModelScope.launch {
             try {
                 val chapterCount = quranRepository.getChapterCount()
@@ -107,27 +132,27 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
                     quranRepository.insertChapterToLocal(chapter)
                     quranRepository.insertChapterAudiosToLocal(chapterId, audios)
 
-                    insertVerseToLocal(chapter)
+                    insetArabicVerseToDB(chapter)
                 }
             } catch (e: Exception) {
-                Log.e("QuranViewModel", "Fehler beim Laden der Kapitel: ${e.message}")
+                Log.e("QuranViewModel insertAllArabicChapterToDB", "Fehler beim Laden der Kapitel: ${e.message}")
             }
         }
     }
 
-    private suspend fun insertVerseToLocal(chapter: ChapterResponse) {
+    private suspend fun insetArabicVerseToDB(chapter: ChapterResponse) {
         for (verse in chapter.arabic1) {
             quranRepository.insertChapterArabic1ToLocal(chapter.surahNo, verse)
         }
     }
 
-   fun getChapterArabic1(chapterId: Int) {
+   fun getArabicChapterFormDB(chapterId: Int) {
         viewModelScope.launch {
             try {
                 val result = quranRepository.getChapterArabic1(chapterId)
                 _arabic1.value = result
             } catch (e: Exception) {
-                Log.d("QuranViewModel", "Error: ${e.message}")
+                Log.d("QuranViewModel getArabicChapterFormDB", "Error: ${e.message}")
             }
         }
     }
