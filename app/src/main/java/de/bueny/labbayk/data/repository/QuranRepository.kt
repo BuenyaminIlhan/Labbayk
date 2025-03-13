@@ -25,7 +25,7 @@ interface QuranRepositoryInterface {
     suspend fun insertQuranListToLocal(quranList: List<ChapterListResponse>)
     suspend fun insertChapterToLocal(chapter: ChapterResponse)
     suspend fun insertGermanVersesToLocal(verses: QuranVerseGerman)
-    suspend fun getGermanVerses(chapterNumber: Int): List<QuranVerseGerman>
+    suspend fun getGermanVerse(chapterNumber: Int): QuranVerseGerman
     suspend fun insertChapterAudiosToLocal(
         chapterId: Int,
         audios: Map<String, ChapterAudioResponse>
@@ -88,8 +88,8 @@ class QuranRepository(
         chapterGermanDao.insertAll(listOf(verses))
     }
 
-    override suspend fun getGermanVerses(chapterNumber: Int): List<QuranVerseGerman> {
-        return chapterGermanDao.getAllGermanVerses(chapterNumber)
+    override suspend fun getGermanVerse(chapterNumber: Int): QuranVerseGerman {
+        return chapterGermanDao.getGermanVerse(chapterNumber)
     }
 
     override suspend fun insertChapterAudiosToLocal(

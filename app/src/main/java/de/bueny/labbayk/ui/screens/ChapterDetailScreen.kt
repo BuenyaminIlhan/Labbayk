@@ -27,6 +27,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,8 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.QuranListEntity
+import de.bueny.labbayk.data.remote.QuranVerseGerman
+import de.bueny.labbayk.ui.QuranViewModel
 import de.bueny.labbayk.util.toArabicNumber
 
 @OptIn(UnstableApi::class)
@@ -55,6 +58,7 @@ fun ChapterDetailScreen(
     modifier: Modifier = Modifier,
     selectedChapterArabic: State<List<ChapterArabic1>?>,
     selectedChapter: QuranListEntity?,
+    quranViewModel: QuranViewModel,
     function: () -> Unit
 ) {
     val versePerPage = 6
@@ -75,6 +79,7 @@ fun ChapterDetailScreen(
     val currentPage = pagerState.currentPage
     val pageCountArabic = toArabicNumber(pageCount)
     val currentPageArabic = toArabicNumber(currentPage + 1)
+    val selectedVerseGerman = quranViewModel.germanVerses.collectAsState()
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -90,13 +95,15 @@ fun ChapterDetailScreen(
                 startIndex = { page -> page * versePerPage },
                 endIndex = { page -> minOf((page + 1) * versePerPage, filteredVerses?.size ?: 0) },
                 currentPage = currentPage,
-                onVerseClick = { isSheetOpen = true }
+                onVerseClick = { verseNumber ->
+                    isSheetOpen = true
+                    quranViewModel.setSelectedGermanVerse(verseNumber)
+                }
             )
+            Log.d("ChapterDetailScreen", "Verse clicked: ${selectedVerseGerman.value?.text}")
 
             Spacer(modifier = Modifier.weight(1f))
-            BottomSheetDisplay(
-                isSheetOpen = isSheetOpen
-            ) { isSheetOpen = false }
+            BottomSheetDisplay(isSheetOpen, selectedVerseGerman) { isSheetOpen = false }
             PageNumberDisplay(currentPageArabic, pageCountArabic)
         }
     }
@@ -131,7 +138,7 @@ fun HorizontalPagerDisplay(
     filteredVerses: List<ChapterArabic1>?,
     startIndex: (Int) -> Int,
     endIndex: (Int) -> Int,
-    onVerseClick: () -> Unit,
+    onVerseClick: (Int) -> Unit,
     currentPage: Int,
     versePerPage: Int
 ) {
@@ -164,7 +171,7 @@ fun HorizontalPagerDisplay(
 private fun DisplayVerse(
     verse: ChapterArabic1?,
     index: Int,
-    onVerseClick: () -> Unit
+    onVerseClick: (Int) -> Unit
 ) {
     val indexArabic = toArabicNumber(index + 1)
     val annotatedString = buildAnnotatedString {
@@ -202,9 +209,14 @@ private fun DisplayVerse(
 
     Text(
         modifier = Modifier
-            .clickable { onVerseClick()
-                       Log.d("ChapterDetailScreen", "Verse clicked: ${index + 1}")
-                       },
+            .clickable {
+                if (verse != null) {
+                    onVerseClick(verse.id)
+                }
+                if (verse != null) {
+                    Log.d("ChapterDetailScreen", "Verse clicked: ${verse.id}")
+                }
+            },
         text = annotatedString,
         inlineContent = inlineContent,
         fontSize = 16.sp,
@@ -217,6 +229,7 @@ private fun DisplayVerse(
 @Composable
 fun BottomSheetDisplay(
     isSheetOpen: Boolean,
+    selectedVerseGerman: State<QuranVerseGerman?>,
     onDismissRequest: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(
@@ -233,10 +246,12 @@ fun BottomSheetDisplay(
                 sheetState = sheetState,
                 onDismissRequest = { onDismissRequest() }
             ) {
-                Text(
-                    "Swipe up to open sheet. Swipe down to dismiss.",
-                    modifier = Modifier.padding(16.dp)
-                )
+                selectedVerseGerman.value?.text?.let {
+                    Text(
+                        it,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
     }

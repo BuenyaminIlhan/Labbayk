@@ -26,7 +26,7 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     val arabic1 = _arabic1.asStateFlow()
     private val _quranList = MutableStateFlow<List<QuranListEntity>?>(null)
     val quranList = _quranList.asStateFlow()
-    private val _germanVerses = MutableStateFlow<List<QuranVerseGerman>?>(null)
+    private val _germanVerses = MutableStateFlow<QuranVerseGerman?>(null)
     val germanVerses = _germanVerses.asStateFlow()
 
     init {
@@ -42,10 +42,10 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         insertAllArabicChapterToDB()
     }
 
-    private fun getGermanVerseFromDB(chapterNumber: Int) {
+    private fun getGermanVerseFromDB(chapterId: Int) {
         viewModelScope.launch {
             try {
-                val germanVerses = quranRepository.getGermanVerses(chapterNumber)
+                val germanVerses = quranRepository.getGermanVerse(chapterId)
                 _germanVerses.value = germanVerses
 
                 Log.d("QuranViewModel getGermanVerseFromDB", "Verse List: $germanVerses")
@@ -54,6 +54,11 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    fun setSelectedGermanVerse(chapterId: Int) {
+        getGermanVerseFromDB(chapterId)
+    }
+
 
     private fun getQuranList() {
         viewModelScope.launch {
@@ -135,7 +140,10 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
                     insetArabicVerseToDB(chapter)
                 }
             } catch (e: Exception) {
-                Log.e("QuranViewModel insertAllArabicChapterToDB", "Fehler beim Laden der Kapitel: ${e.message}")
+                Log.e(
+                    "QuranViewModel insertAllArabicChapterToDB",
+                    "Fehler beim Laden der Kapitel: ${e.message}"
+                )
             }
         }
     }
@@ -146,7 +154,7 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-   fun getArabicChapterFormDB(chapterId: Int) {
+    fun getArabicChapterFormDB(chapterId: Int) {
         viewModelScope.launch {
             try {
                 val result = quranRepository.getChapterArabic1(chapterId)

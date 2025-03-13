@@ -60,7 +60,7 @@ fun AppNavHost(
         }
 
         composable("chapterDetail") {
-            ChapterDetailScreen(modifier, selectedChapter, selectedChapterTitle) { }
+            ChapterDetailScreen(modifier, selectedChapter, selectedChapterTitle, quranViewModel) { }
         }
     }
 }

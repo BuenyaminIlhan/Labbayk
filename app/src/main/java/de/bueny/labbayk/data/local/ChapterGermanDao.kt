@@ -12,6 +12,6 @@ interface ChapterGermanDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(verses: List<QuranVerseGerman>)
 
-    @Query("SELECT * FROM quran_verse_german WHERE chapter = :chapterNumber")
-    suspend fun getAllGermanVerses(chapterNumber: Int): List<QuranVerseGerman>
+    @Query("SELECT * FROM quran_verse_german WHERE id = :chapterId")
+    suspend fun getGermanVerse(chapterId: Int): QuranVerseGerman
 }
