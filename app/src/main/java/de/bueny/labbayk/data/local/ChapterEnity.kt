@@ -50,5 +50,6 @@ data class ChapterArabic1(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val arabic1: String,
-    val chapterId: Int
+    val chapterId: Int,
+    val isFav: Boolean = false
 )

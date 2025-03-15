@@ -14,13 +14,3 @@ data class QuranVerseGermanResponse(
     val verse: Int,
     val text: String
 )
-
-@Entity(tableName = "quran_verse_german")
-data class QuranVerseGerman(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val chapter: Int,
-    val verse: Int,
-    val text: String,
-)
-

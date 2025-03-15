@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import de.bueny.labbayk.data.remote.QuranVerseGerman
 
 @Dao
 interface ChapterGermanDao {
@@ -14,4 +13,8 @@ interface ChapterGermanDao {
 
     @Query("SELECT * FROM quran_verse_german WHERE id = :chapterId")
     suspend fun getGermanVerse(chapterId: Int): QuranVerseGerman
+
+    @Query("UPDATE quran_verse_german SET isFav = :isFav WHERE id = :verseId")
+    suspend fun updateFavoriteStatus(verseId: Int, isFav: Boolean)
+
 }

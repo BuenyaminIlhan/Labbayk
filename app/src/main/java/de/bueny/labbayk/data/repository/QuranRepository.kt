@@ -1,5 +1,6 @@
 package de.bueny.labbayk.data.repository
 
+import androidx.compose.runtime.MutableState
 import androidx.room.Dao
 import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.ChapterAudio
@@ -14,7 +15,7 @@ import de.bueny.labbayk.data.remote.ChapterResponse
 import de.bueny.labbayk.data.remote.ChapterResponseGerman
 import de.bueny.labbayk.data.remote.QuranApiArabic
 import de.bueny.labbayk.data.remote.QuranApiGerman
-import de.bueny.labbayk.data.remote.QuranVerseGerman
+import de.bueny.labbayk.data.local.QuranVerseGerman
 
 @Dao
 interface QuranRepositoryInterface {
@@ -34,6 +35,7 @@ interface QuranRepositoryInterface {
     suspend fun getChapterCount(): Int
     suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String)
     suspend fun getChapterArabic1(chapterId: Int): List<ChapterArabic1>
+    suspend fun updateFavoriteStatus(id: Int, isFav: Boolean)
 }
 
 class QuranRepository(
@@ -121,6 +123,10 @@ class QuranRepository(
 
     override suspend fun getChapterArabic1(chapterId: Int): List<ChapterArabic1> {
         return chapterArabicDao.getArabicVersesByChapterId(chapterId)
+    }
+
+    override suspend fun updateFavoriteStatus(id: Int, isFav: Boolean) {
+        chapterGermanDao.updateFavoriteStatus(id, isFav)
     }
 
     override suspend fun getChapterGerman(): ChapterResponseGerman {

@@ -1,16 +1,18 @@
 package de.bueny.labbayk.ui.screens
 
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
@@ -19,7 +21,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -48,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import de.bueny.labbayk.data.local.ChapterArabic1
 import de.bueny.labbayk.data.local.QuranListEntity
-import de.bueny.labbayk.data.remote.QuranVerseGerman
+import de.bueny.labbayk.data.local.QuranVerseGerman
 import de.bueny.labbayk.ui.QuranViewModel
 import de.bueny.labbayk.util.toArabicNumber
 
@@ -61,6 +67,7 @@ fun ChapterDetailScreen(
     quranViewModel: QuranViewModel,
     function: () -> Unit
 ) {
+    val selectedVerseGerman = quranViewModel.germanVerses.collectAsState()
     val versePerPage = 6
     val filteredVerses = selectedChapterArabic.value?.let { arabicList ->
         arabicList.filter { verse ->
@@ -79,7 +86,6 @@ fun ChapterDetailScreen(
     val currentPage = pagerState.currentPage
     val pageCountArabic = toArabicNumber(pageCount)
     val currentPageArabic = toArabicNumber(currentPage + 1)
-    val selectedVerseGerman = quranViewModel.germanVerses.collectAsState()
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Column(
@@ -100,10 +106,17 @@ fun ChapterDetailScreen(
                     quranViewModel.setSelectedGermanVerse(verseNumber)
                 }
             )
-            Log.d("ChapterDetailScreen", "Verse clicked: ${selectedVerseGerman.value?.text}")
-
             Spacer(modifier = Modifier.weight(1f))
-            BottomSheetDisplay(isSheetOpen, selectedVerseGerman) { isSheetOpen = false }
+            BottomSheetDisplay(
+                isSheetOpen, selectedVerseGerman,
+                onDismissRequest = { isSheetOpen = false },
+                onClickFavorite = {
+                    quranViewModel.updateFavoriteStatus(
+                        it.id, !it.isFav
+                    )
+                },
+
+                )
             PageNumberDisplay(currentPageArabic, pageCountArabic)
         }
     }
@@ -210,12 +223,7 @@ private fun DisplayVerse(
     Text(
         modifier = Modifier
             .clickable {
-                if (verse != null) {
-                    onVerseClick(verse.id)
-                }
-                if (verse != null) {
-                    Log.d("ChapterDetailScreen", "Verse clicked: ${verse.id}")
-                }
+                onVerseClick(verse?.id ?: return@clickable)
             },
         text = annotatedString,
         inlineContent = inlineContent,
@@ -224,38 +232,76 @@ private fun DisplayVerse(
     )
 }
 
-
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetDisplay(
     isSheetOpen: Boolean,
     selectedVerseGerman: State<QuranVerseGerman?>,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onClickFavorite: (QuranVerseGerman) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        if (isSheetOpen) {
-            ModalBottomSheet(
-                modifier = Modifier.fillMaxHeight(),
-                sheetState = sheetState,
-                onDismissRequest = { onDismissRequest() }
+    if (isSheetOpen) {
+        ModalBottomSheet(
+            modifier = Modifier.fillMaxHeight(),
+            sheetState = sheetState,
+            onDismissRequest = { onDismissRequest() },
+            contentColor = Color(0xFF3E3E3E),
+            containerColor = Color(0xFFF5F5F5)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Icon(
+                        imageVector = if (selectedVerseGerman.value?.isFav == true) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorit",
+                        tint = Color(0xFFE57373),
+                        modifier = Modifier
+                            .height(24.dp)
+                            .clickable {
+                                selectedVerseGerman.value?.let(onClickFavorite)
+                            }
+                    )
+
+                    Text(
+                        text = "2 / 52",
+                        color = Color(0xFF3E3E3E),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+
                 selectedVerseGerman.value?.text?.let {
                     Text(
                         it,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        color = Color(0xFF3E3E3E),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Text(
+                    text = "Frank Bubenheim",
+                    color = Color(0xFF3E3E3E),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
 }
+
 
 /**
  * Zeigt die aktuelle Seitenzahl und die Gesamtseitenzahl an.

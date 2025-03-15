@@ -2,6 +2,7 @@ package de.bueny.labbayk.ui
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.bueny.labbayk.data.local.ChapterArabic1
@@ -11,7 +12,7 @@ import de.bueny.labbayk.data.remote.ChapterAudioResponse
 import de.bueny.labbayk.data.remote.ChapterResponse
 import de.bueny.labbayk.data.remote.QuranApiArabic
 import de.bueny.labbayk.data.remote.QuranApiGerman
-import de.bueny.labbayk.data.remote.QuranVerseGerman
+import de.bueny.labbayk.data.local.QuranVerseGerman
 import de.bueny.labbayk.data.repository.QuranRepository
 import de.bueny.labbayk.data.repository.QuranRepositoryInterface
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,8 +48,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val germanVerses = quranRepository.getGermanVerse(chapterId)
                 _germanVerses.value = germanVerses
-
-                Log.d("QuranViewModel getGermanVerseFromDB", "Verse List: $germanVerses")
             } catch (e: Exception) {
                 Log.d("QuranViewModel getGermanVerseFromDB", "Error: ${e.message}")
             }
@@ -126,8 +125,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 for (surahNumber in 1..114) {
-                    Log.d("QuranViewModel", "Lade Kapitel $surahNumber...")
-
                     val chapterResponse = quranRepository.getChapter(surahNumber)
                     val chapter: ChapterResponse = chapterResponse
                     val chapterId = chapter.surahNo
@@ -164,4 +161,21 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+
+    fun updateFavoriteStatus(id: Int, isFav: Boolean) {
+        viewModelScope.launch {
+            try {
+                quranRepository.updateFavoriteStatus(id, isFav)
+                _germanVerses.value?.let {
+                    if (it.id == id) {
+                        _germanVerses.value = it.copy(isFav = isFav)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("QuranViewModel updateFavoriteStatus", "Error: ${e.message}")
+            }
+        }
+    }
+
 }
