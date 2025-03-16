@@ -2,7 +2,6 @@ package de.bueny.labbayk.ui
 
 import android.app.Application
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import de.bueny.labbayk.data.local.ChapterArabic1
@@ -23,25 +22,43 @@ import kotlinx.coroutines.runBlocking
 class QuranViewModel(application: Application) : AndroidViewModel(application) {
 
     private val quranRepository: QuranRepositoryInterface
-    private val _arabic1 = MutableStateFlow<List<ChapterArabic1>?>(null)
+    private val _arabic1 = MutableStateFlow<List<ChapterArabic1>>(emptyList())
     val arabic1 = _arabic1.asStateFlow()
-    private val _quranList = MutableStateFlow<List<QuranListEntity>?>(null)
+    private val _quranList = MutableStateFlow<List<QuranListEntity>>(emptyList())
     val quranList = _quranList.asStateFlow()
     private val _germanVerses = MutableStateFlow<QuranVerseGerman?>(null)
     val germanVerses = _germanVerses.asStateFlow()
+    private val _favoritesList = MutableStateFlow<List<QuranVerseGerman>>(emptyList())
+    val favoritesList = _favoritesList.asStateFlow()
 
     init {
         val quranDB = QuranDatabase.getDB(application)
         val quranListDao = quranDB.quranListDao
         val chapterArabicDao = quranDB.chapterArabicDao
-        val cahapterGermanDao = quranDB.chapterGermanDao
+        val chapterGermanDao = quranDB.chapterGermanDao
 
         quranRepository = QuranRepository(
-            QuranApiArabic, QuranApiGerman, quranListDao, cahapterGermanDao, chapterArabicDao
+            QuranApiArabic, QuranApiGerman, quranListDao, chapterGermanDao, chapterArabicDao
         )
         insertAllChaptersToDB()
         insertAllArabicChapterToDB()
+        getFavoritesList()
     }
+
+
+    private fun getFavoritesList() {
+        viewModelScope.launch {
+            try {
+                quranRepository.getFavoriteVerses().collect { favorites ->
+                    _favoritesList.value = favorites
+                    Log.d("QuranViewModel getFavoritesList", "Favorites: ${favorites.toString()}")
+                }
+            } catch (e: Exception) {
+                Log.d("QuranViewModel getFavoritesList", "Error: ${e.message}")
+            }
+        }
+    }
+
 
     private fun getGermanVerseFromDB(chapterId: Int) {
         viewModelScope.launch {

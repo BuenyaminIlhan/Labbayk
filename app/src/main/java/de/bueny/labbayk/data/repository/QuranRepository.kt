@@ -16,6 +16,9 @@ import de.bueny.labbayk.data.remote.ChapterResponseGerman
 import de.bueny.labbayk.data.remote.QuranApiArabic
 import de.bueny.labbayk.data.remote.QuranApiGerman
 import de.bueny.labbayk.data.local.QuranVerseGerman
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface QuranRepositoryInterface {
@@ -36,6 +39,7 @@ interface QuranRepositoryInterface {
     suspend fun insertChapterArabic1ToLocal(chapterId: Int, arabic1: String)
     suspend fun getChapterArabic1(chapterId: Int): List<ChapterArabic1>
     suspend fun updateFavoriteStatus(id: Int, isFav: Boolean)
+    fun getFavoriteVerses(): Flow<List<QuranVerseGerman>>
 }
 
 class QuranRepository(
@@ -52,7 +56,7 @@ class QuranRepository(
 
     override suspend fun getQuranList(): List<ChapterListResponse> {
         return quranApi.service.getQuranList()
-   }
+    }
 
     override suspend fun getQuranListFromLocal(): List<QuranListEntity> {
         return quranListDao.getAllQuranList()
@@ -127,6 +131,10 @@ class QuranRepository(
 
     override suspend fun updateFavoriteStatus(id: Int, isFav: Boolean) {
         chapterGermanDao.updateFavoriteStatus(id, isFav)
+    }
+
+    override fun getFavoriteVerses(): Flow<List<QuranVerseGerman>> {
+        return chapterGermanDao.getFavoriteVerses()
     }
 
     override suspend fun getChapterGerman(): ChapterResponseGerman {

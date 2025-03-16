@@ -45,8 +45,7 @@ fun AppNavHost(
 
         composable<FavoritesRoute> {
             FavoritesScreen(
-                modifier = modifier
-            )
+                modifier, quranViewModel) {  }
         }
 
         composable<QuranListRoute> {
