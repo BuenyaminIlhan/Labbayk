@@ -16,6 +16,7 @@ import de.bueny.labbayk.data.repository.QuranRepository
 import de.bueny.labbayk.data.repository.QuranRepositoryInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -24,8 +25,12 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     private val quranRepository: QuranRepositoryInterface
     private val _arabic1 = MutableStateFlow<List<ChapterArabic1>>(emptyList())
     val arabic1 = _arabic1.asStateFlow()
-    private val _quranList = MutableStateFlow<List<QuranListEntity>>(emptyList())
+    private var _quranList = MutableStateFlow<List<QuranListEntity>>(emptyList())
     val quranList = _quranList.asStateFlow()
+
+    private val _filteredQuranList = MutableStateFlow<List<QuranListEntity>>(emptyList())
+    var filteredQuranList = _filteredQuranList.asStateFlow()
+
     private val _germanVerses = MutableStateFlow<QuranVerseGerman?>(null)
     val germanVerses = _germanVerses.asStateFlow()
     private val _favoritesList = MutableStateFlow<List<QuranVerseGerman>>(emptyList())
@@ -45,7 +50,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         getFavoritesList()
     }
 
-
     private fun getFavoritesList() {
         viewModelScope.launch {
             try {
@@ -59,6 +63,15 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun filterList(surahName: String) {
+        _filteredQuranList.value = _quranList.value.filter {
+            it.surahName.contains(surahName, ignoreCase = true)
+        }
+    }
+
+    fun resetFilterQuranList() {
+        _filteredQuranList.value = _quranList.value
+    }
 
     private fun getGermanVerseFromDB(chapterId: Int) {
         viewModelScope.launch {
@@ -75,13 +88,13 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         getGermanVerseFromDB(chapterId)
     }
 
-
     private fun getQuranList() {
         viewModelScope.launch {
             try {
                 val quranList = quranRepository.getQuranListFromLocal()
                 val list: List<QuranListEntity> = quranList
                 _quranList.value = list
+                _filteredQuranList.value = list
             } catch (e: Exception) {
                 Log.d("QuranViewModel getQuranList", "Error: ${e.message}")
             }
@@ -111,7 +124,6 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
             getQuranList()
         }
     }
-
 
     private fun insertGermanVersesToRoom() {
         viewModelScope.launch {

@@ -30,7 +30,7 @@ fun AppNavHost(
     quranViewModel: QuranViewModel
 ) {
 
-    val quranList = quranViewModel.quranList.collectAsState()
+    val quranList = quranViewModel.filteredQuranList.collectAsState()
     val selectedChapter = quranViewModel.arabic1.collectAsState()
     var selectedChapterTitle by remember { mutableStateOf<QuranListEntity?>(null) }
 

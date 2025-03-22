@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import de.bueny.labbayk.data.local.QuranListEntity
@@ -57,7 +58,7 @@ fun QuranListScreen(
     onTitleChange: (QuranListEntity) -> Unit
     ) {
         Column{
-        SearchField { }
+        SearchField(quranViewModel) { }
 
         LazyColumn {
             itemsIndexed(quranList.value ?: emptyList()) { index, chapter ->
@@ -72,10 +73,10 @@ fun QuranListScreen(
 }
 
 @OptIn(UnstableApi::class)
-@kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchField(
-    onTitleChange: (String) -> Unit,
+    quranViewModel: QuranViewModel,
+    onTitleChange: (String) -> Unit
 ) {
     var localTitle by remember { mutableStateOf("") }
 
@@ -90,6 +91,8 @@ fun SearchField(
         onValueChange = { newText ->
             localTitle = newText
             onTitleChange(newText)
+            quranViewModel.filterList(localTitle)
+
         },
         singleLine = true,
         leadingIcon = {
@@ -101,7 +104,10 @@ fun SearchField(
         },
         trailingIcon = {
             if (localTitle.isNotEmpty()) {
-                IconButton(onClick = { localTitle = "" }) {
+                IconButton(onClick = {
+                    localTitle = ""
+                    quranViewModel.resetFilterQuranList()
+                }) {
                     Icon(Icons.Default.Clear, contentDescription = "Clear", tint = Color.Gray)
                 }
             }
