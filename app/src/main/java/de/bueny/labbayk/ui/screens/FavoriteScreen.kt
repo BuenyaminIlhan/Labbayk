@@ -28,16 +28,14 @@ import de.bueny.labbayk.ui.QuranViewModel
 fun FavoritesScreen(
     modifier: Modifier,
     quranViewModel: QuranViewModel,
-    onFavoriteClick: (Int) -> Unit // Callback, der beim Klick auf ein Element aufgerufen wird
+    onFavoriteClick: () -> Unit
 ) {
 
     val favorites = quranViewModel.favoritesList.collectAsState()
-
-    val backgroundColor1 = Color(0xFFD8C8A9) // Dunkelgrün für die erste Karte
-    val backgroundColor2 = Color(0xFF556B2F) // Moosgrün für die zweite Karte
-    val textColor2 = Color(0xFFF2DFBF) // Weiß für den Text, damit er gut lesbar ist
-    val textColor1 = Color.DarkGray // Weiß für den Text, damit er gut lesbar ist
-
+    val backgroundColor1 = Color(0xFFD8C8A9)
+    val backgroundColor2 = Color(0xFF556B2F)
+    val textColor2 = Color(0xFFF2DFBF)
+    val textColor1 = Color.DarkGray
 
     Column(
         modifier = modifier.fillMaxWidth().padding(16.dp)
@@ -52,7 +50,10 @@ fun FavoritesScreen(
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onFavoriteClick(i) }
+                        .clickable {
+                            onFavoriteClick()
+                            quranViewModel.setSelectedFavorite(favorites.value[i])
+                        }
                         .padding(2.dp),
                     colors = CardDefaults.cardColors(backgroundColor)
                 ) {

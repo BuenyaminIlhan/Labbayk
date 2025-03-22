@@ -16,7 +16,6 @@ import de.bueny.labbayk.data.repository.QuranRepository
 import de.bueny.labbayk.data.repository.QuranRepositoryInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -25,11 +24,15 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
     private val quranRepository: QuranRepositoryInterface
     private val _arabic1 = MutableStateFlow<List<ChapterArabic1>>(emptyList())
     val arabic1 = _arabic1.asStateFlow()
+
     private var _quranList = MutableStateFlow<List<QuranListEntity>>(emptyList())
     val quranList = _quranList.asStateFlow()
 
     private val _filteredQuranList = MutableStateFlow<List<QuranListEntity>>(emptyList())
     var filteredQuranList = _filteredQuranList.asStateFlow()
+
+    private var _selectedFavoriteItem = MutableStateFlow<QuranVerseGerman?>(null)
+    val selectedFavoriteItem = _selectedFavoriteItem.asStateFlow()
 
     private val _germanVerses = MutableStateFlow<QuranVerseGerman?>(null)
     val germanVerses = _germanVerses.asStateFlow()
@@ -48,6 +51,10 @@ class QuranViewModel(application: Application) : AndroidViewModel(application) {
         insertAllChaptersToDB()
         insertAllArabicChapterToDB()
         getFavoritesList()
+    }
+
+    fun setSelectedFavorite(favorite: QuranVerseGerman?) {
+        _selectedFavoriteItem.value = favorite
     }
 
     private fun getFavoritesList() {

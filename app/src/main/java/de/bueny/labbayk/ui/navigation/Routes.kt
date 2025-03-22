@@ -16,3 +16,7 @@ object FavoritesRoute
 object ChapterDetailRoute {
     const val route = "chapterDetail" }
 
+@Serializable
+object FavoriteDetailScreen {
+    const val route = "favoriteDetailScreen"
+}

@@ -17,6 +17,7 @@ import de.bueny.labbayk.data.local.QuranListEntity
 import de.bueny.labbayk.ui.QuranViewModel
 import de.bueny.labbayk.ui.screens.ChapterDetailScreen
 import de.bueny.labbayk.ui.screens.FavoritesScreen
+import de.bueny.labbayk.ui.screens.FavoriteDetailScreen
 import de.bueny.labbayk.ui.screens.HomeScreen
 import de.bueny.labbayk.ui.screens.QuranListScreen
 
@@ -33,6 +34,7 @@ fun AppNavHost(
     val quranList = quranViewModel.filteredQuranList.collectAsState()
     val selectedChapter = quranViewModel.arabic1.collectAsState()
     var selectedChapterTitle by remember { mutableStateOf<QuranListEntity?>(null) }
+    val selectedFavorite = quranViewModel.selectedFavoriteItem.collectAsState()
 
     NavHost(
         navController = navHostController,
@@ -45,7 +47,13 @@ fun AppNavHost(
 
         composable<FavoritesRoute> {
             FavoritesScreen(
-                modifier, quranViewModel) {  }
+                modifier, quranViewModel) {
+                navHostController.navigate(FavoriteDetailScreen.route)
+            }
+        }
+
+        composable(FavoriteDetailScreen.route) {
+            FavoriteDetailScreen(modifier, selectedFavorite, selectedChapter)
         }
 
         composable<QuranListRoute> {
