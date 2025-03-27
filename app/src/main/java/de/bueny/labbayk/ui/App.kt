@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -46,20 +47,18 @@ fun App() {
     val currentBackStack by navHostController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
 
-    val showBackButtonOnDetail = currentDestination?.hierarchy?.any { it.route == ChapterDetailRoute.route } == true
-    val showBackButtonOnFavorite = currentDestination?.hierarchy?.any { it.route == FavoriteDetailScreen.route } == true
+    val showBottomBarOnDetail = currentDestination?.hierarchy?.any { it.route == ChapterDetailRoute.route } == true
+    val showBottomBarOnFavoriteDetail = currentDestination?.hierarchy?.any { it.route == FavoriteDetailScreen.route } == true
 
     Scaffold(
         containerColor = primaryBackgroundColor,
         topBar = {
-            if (showBackButtonOnDetail || showBackButtonOnFavorite) {
                 CustomTopBar(
                     primaryBackgroundColor, quranViewModel,navHostController
                 )
-            }
         },
         bottomBar = {
-            if (!showBackButtonOnDetail && !showBackButtonOnFavorite) {
+            if (!showBottomBarOnDetail && !showBottomBarOnFavoriteDetail) {
                 BottomNavigationBar(
                     navHostController,
                     selectedNavItem,
@@ -89,14 +88,32 @@ private fun CustomTopBar(
     quranViewModel: QuranViewModel,
     navController: NavController
 ) {
+
+    val currentBackStack by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStack?.destination
+    val showBackButtonOnDetail = currentDestination?.hierarchy?.any { it.route == ChapterDetailRoute.route } == true
+    val showBackButtonOnFavorite = currentDestination?.hierarchy?.any { it.route == FavoriteDetailScreen.route } == true
+
+
     TopAppBar(
-        title = {},
+        title = {
+            Text(
+                when {
+                    showBackButtonOnDetail -> "Detail"
+                    showBackButtonOnFavorite -> "Favoriten"
+                    else -> ""
+                }
+            )
+        }
+,
         navigationIcon = {
-            IconButton(onClick = { navController.navigateUp() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Zurück"
-                )
+            if (showBackButtonOnDetail || showBackButtonOnFavorite) {
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = Icons.AutoMirrored.Filled.ArrowBack.name
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
