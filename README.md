@@ -1,4 +1,4 @@
-# Labbyk
+# Labbayk
 
 **Der Koran in verschieden sprachen.**
 
