@@ -2,7 +2,7 @@
 
 **Der Koran in verschieden sprachen.**
 
-Jederzeit offline in 90 verschiedenen Sprachen zum Rezitieren und Nachschlagen.
+Jederzeit kostenlos und offline in 90 verschiedenen Sprachen zum Rezitieren und Nachschlagen.
 
 ## Design
 
@@ -15,11 +15,11 @@ Jederzeit offline in 90 verschiedenen Sprachen zum Rezitieren und Nachschlagen.
 
 
 ## Features
-- [x] Daten werden verschlüsselt in der Cloud gespeichert und sind von überall zugänglich.
-- [x] Übersichtliche Darstellung aller wichtigen Informationen.
-- [x] Anlegen, verwalten von Kunden.
-- [x] Erstellen und verwalten eines detaillierten Produktkatalogs.
-- [x] Angebote mit wenigen Klicks erstellen.
+- [x] Die Daten werden lokal in der Room-Datenbank gespeichert.  
+- [x] Keine Anmeldung erforderlich.  
+- [x] Suche nach Kapiteln.  
+- [x] Durch Klick auf den gewünschten Vers wird die Übersetzung auf Deutsch angezeigt.  
+- [x] Gewünschte Verse favorisieren.  
 
 ## Technischer Aufbau
 
@@ -28,26 +28,23 @@ In diesem Projekt wurde die MVVM-Architektur angewendet, um die Trennung von Vie
 
 Zur Sicherstellung eines einheitlichen Designs wurden die Farbdefinitionen zentral in den Assets hinterlegt.
 
-#### Datenspeicherung
-Alle vom Nutzer eingegebenen Daten werden im Firebase Firestore und Firebase Authentication (FireAuth) gespeichert.
+#### Datenspeicherung  
+Alle vom Nutzer eingegebenen Daten werden in der Room-Datenbank gespeichert.  
 
-Die Entscheidung für Firebase basiert auf den folgenden Vorteilen:
+Die Entscheidung für Room basiert auf den folgenden Vorteilen:  
 
-Echtzeit-Synchronisierung: Daten werden automatisch zwischen Client und Server synchronisiert.
-Offline-Unterstützung: Nutzer können die Anwendung auch ohne Internetverbindung verwenden, und die Daten werden später synchronisiert.
-Skalierbarkeit: Firebase bietet eine skalierbare Infrastruktur, die sich an die Anforderungen des Projekts anpassen lässt.
+- **Lokale Speicherung:** Alle Daten werden direkt auf dem Gerät gespeichert, ohne eine Internetverbindung zu benötigen.  
+- **Offline-Nutzung:** Die Anwendung kann vollständig offline genutzt werden, da keine Synchronisierung mit einem Server erforderlich ist.  
+- **Performance:** Room bietet eine effiziente und optimierte Speicherung von Daten mit SQLite im Hintergrund.  
+- **Flexibilität:** Die Datenbank kann an die spezifischen Anforderungen des Projekts angepasst und erweitert werden.  
 
-#### API Calls
-In dieser App wird die Google API verwendet, insbesondere für die Adressüberprüfung beim Anlegen von Kunden. Die API wird genutzt, um die eingegebene Adresse zu validieren und sicherzustellen, dass diese korrekt und vollständig ist.
+#### API Calls  
+In dieser App werden zwei verschiedene Quran-APIs verwendet: eine für den Koran im Original und eine zweite für die Übersetzungen in andere Sprachen. Der gesamte Inhalt wird in die Datenbank gespeichert.
 
-#### 3rd-Party Frameworks
-Das PDFKit-Framework wird verwendet, um PDF-Dokumente zu generieren. Es dient unter anderem dazu, Angebote als PDF zu exportieren.
+## Ausblick  
 
-
-## Ausblick
-
-- [ ] Rechnungserstellung
-- [ ] Mitarbeiterverwaltung
-- [ ] E-Mail-Versand für Angebote / Rechnungen
-- [ ] Individuelle Vorlagen
-- [ ] Android App
+- [ ] Audio-Wiedergabe von renommierten Rezitatoren  
+- [ ] Lesezeichen-Funktion  
+- [ ] Download-Funktion für Übersetzungen in der gewünschten Sprache  
+- [ ] Einbeziehung der Koran-Exegese  
+- [ ] Einbeziehung von Hadithen  
