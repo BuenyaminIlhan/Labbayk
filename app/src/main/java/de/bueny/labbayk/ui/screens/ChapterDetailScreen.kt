@@ -272,7 +272,7 @@ fun BottomSheetDisplay(
                     )
 
                     Text(
-                        text = "2 / 52",
+                        text = "${selectedVerseGerman.value?.verse} / ${selectedVerseGerman.value?.chapter} ",
                         color = Color(0xFF3E3E3E),
                         style = MaterialTheme.typography.titleMedium
                     )

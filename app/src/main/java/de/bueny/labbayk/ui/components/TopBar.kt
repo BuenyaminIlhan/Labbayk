@@ -39,14 +39,6 @@ fun TopBar(
                 containerColor = backgroundColor
             )
         )
-//        Row(
-//            modifier = Modifier
-//                .background(backgroundColor)
-//                .padding(bottom = 8.dp),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//
-//        }
     }
 }
 
@@ -60,19 +52,4 @@ fun TopAppBarTitle(chapter: State<ChapterResponse?>) {
         chapter.value?.let { Text(it.surahNameArabic) }
     }
 }
-
-
-//@Composable
-//fun MainScreen() {
-//    // Verwende MutableState, u den Titel zu verwalten
-//    var title by remember { mutableStateOf("Initial Title") }
-//
-//    TopBar(
-//        navigateUp = { /* Handle Back Navigation */ },
-//        canNavigateBack = true,
-//        title = title,
-//        onTitleChange = { newTitle -> title = newTitle },
-//        modifier = TODO() // Update des Titels
-//    )
-//}
 

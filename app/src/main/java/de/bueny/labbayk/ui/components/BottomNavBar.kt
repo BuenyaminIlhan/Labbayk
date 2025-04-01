@@ -30,5 +30,3 @@ fun BottomNavigationBar(
         }
     }
 }
-
-//Color(0xFFA1B57D)
