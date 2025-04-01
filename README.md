@@ -7,10 +7,10 @@ Jederzeit offline in 90 verschiedenen Sprachen zum Rezitieren und Nachschlagen.
 ## Design
 
 <div>
-  <img src="./img/screen1.png" width="200">
-  <img src="./img/screen2.png" width="200">
-  <img src="./img/screen3.png" width="200">
-  <img src="./img/screen4.png" width="200">
+  <img src="./img/Screenshot_1.png" width="200">
+  <img src="./img/Screenshot_2.png" width="200">
+  <img src="./img/Screenshot_3.png" width="200">
+  <img src="./img/Screenshot_4.png" width="200">
 </div>
 
 
