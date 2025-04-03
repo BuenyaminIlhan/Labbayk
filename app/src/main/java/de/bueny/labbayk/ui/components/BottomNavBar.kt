@@ -18,7 +18,7 @@ fun BottomNavigationBar(
     onItemSelected: (NavigationItem) -> Unit
 ) {
     BottomAppBar(
-        containerColor = Color(0xFFA1B57D)
+        containerColor = Color(0xA9B6A079)
     ) {
         NavigationItem.entries.forEach {
             NavigationBarItem(
